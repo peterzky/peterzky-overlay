@@ -1,0 +1,141 @@
+diff --git a/NEMbox/config.py b/NEMbox/config.py
+index 34205ac..ec464b0 100644
+--- a/NEMbox/config.py
++++ b/NEMbox/config.py
+@@ -112,7 +112,18 @@ class Config(Singleton):
+                 'value': False,
+                 'default': False,
+                 'describe': 'Set true to make curses transparency.'
+-            }
++            },
++            'fifo_control': {
++                'value': False,
++                'default': False,
++                'describe': 'Control musicbox with unix named pipe.'
++            },
++            'fifo_interval':{
++                'value': 0.5,
++                'default': 0.5,
++                'describe': 'Background fifo fetch interval.'
++            },
++
+         }
+         self.config = {}
+         if not os.path.isfile(self.path):
+diff --git a/NEMbox/const.py b/NEMbox/const.py
+index 08aca4c..55c7ffc 100644
+--- a/NEMbox/const.py
++++ b/NEMbox/const.py
+@@ -3,6 +3,7 @@ from __future__ import (
+     print_function, unicode_literals, division, absolute_import
+ )
+ import os
++import tempfile
+ 
+ 
+ class Constant(object):
+@@ -12,3 +13,4 @@ class Constant(object):
+     storage_path = os.path.join(conf_dir, 'database.json')
+     cookie_path = os.path.join(conf_dir, 'cookie')
+     log_path = os.path.join(conf_dir, 'musicbox.log')
++    fifo_path = os.path.join(tempfile.gettempdir(),'musicbox.fifo')
+diff --git a/NEMbox/fifo.py b/NEMbox/fifo.py
+new file mode 100644
+index 0000000..f13f77d
+--- /dev/null
++++ b/NEMbox/fifo.py
+@@ -0,0 +1,40 @@
++import time
++import select
++import os
++from multiprocessing import Queue, Process
++
++from .config import Config
++
++class FIFO(object):
++    def __init__(self, path):
++        self.path = path
++        self.queue = Queue()
++        self.process = Process(target=self.monitor)
++        self.enable = Config().get('fifo_control')
++        self.interval = Config().get('fifo_interval')
++
++    def monitor(self):
++        with open(self.path) as fifo:
++            while True:
++                select.select([fifo], [], [fifo])
++                data = fifo.read()
++                if len(data) == 0:
++                    time.sleep(self.interval)
++                    continue
++                self.queue.put(data.strip())
++
++    def start(self):
++        if self.enable:
++            if os.path.exists(self.path):
++                os.unlink(self.path)
++            os.mkfifo(self.path)
++            self.process.daemon = True
++            self.process.start()
++        else:
++            pass
++
++    def retrieve(self):
++        if self.queue.empty():
++            return ""
++        else:
++            return self.queue.get()
+diff --git a/NEMbox/menu.py b/NEMbox/menu.py
+index bcb716f..95a55cc 100644
+--- a/NEMbox/menu.py
++++ b/NEMbox/menu.py
+@@ -30,6 +30,8 @@ from .utils import notify
+ from .storage import Storage
+ from .cache import Cache
+ from . import logger
++from .fifo import FIFO
++from .const import Constant
+ 
+ 
+ locale.setlocale(locale.LC_ALL, '')
+@@ -115,6 +117,7 @@ class Menu(object):
+         self.countdown_start = time.time()
+         self.countdown = -1
+         self.is_in_countdown = False
++        self.fifo = FIFO(Constant.fifo_path)
+ 
+     @property
+     def user(self):
+@@ -241,6 +244,7 @@ class Menu(object):
+         self.player.prev()
+ 
+     def start(self):
++        self.fifo.start()
+         self.menu_starts = time.time()
+         self.ui.build_menu(self.datatype, self.title, self.datalist,
+                            self.offset, self.index, self.step, self.menu_starts)
+@@ -259,6 +263,7 @@ class Menu(object):
+             self.screen.timeout(500)
+             key = self.screen.getch()
+             self.ui.screen.refresh()
++            fifo = self.fifo.retrieve()
+ 
+             # term resize
+             if key == -1:
+@@ -370,10 +375,16 @@ class Menu(object):
+             elif key == ord(']'):
+                 self.next_song()
+ 
++            elif fifo == "next":
++                self.next_song()
++
+             # 播放上一曲
+             elif key == ord('['):
+                 self.previous_song()
+ 
++            elif fifo == "prev":
++                self.previous_song()
++
+             # 增加音量
+             elif key == ord('='):
+                 self.player.volume_up()

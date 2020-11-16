@@ -1,0 +1,3111 @@
+diff --git a/qutebrowser/app.py b/qutebrowser/app.py
+index eb468d6d1..886746a00 100644
+--- a/qutebrowser/app.py
++++ b/qutebrowser/app.py
+@@ -50,8 +50,17 @@ import tokenize
+ 
+ from PyQt5.QtWidgets import QApplication, QWidget
+ from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon, QWindow
+-from PyQt5.QtCore import (pyqtSlot, qInstallMessageHandler, QTimer, QUrl,
+-                          QObject, QEvent, pyqtSignal, Qt)
++from PyQt5.QtCore import (
++    pyqtSlot,
++    qInstallMessageHandler,
++    QTimer,
++    QUrl,
++    QObject,
++    QEvent,
++    pyqtSignal,
++    Qt,
++)
++
+ try:
+     import hunter
+ except ImportError:
+@@ -63,23 +72,50 @@ from qutebrowser.completion.models import miscmodels
+ from qutebrowser.commands import runners
+ from qutebrowser.api import cmdutils
+ from qutebrowser.config import config, websettings, configfiles, configinit
+-from qutebrowser.browser import (urlmarks, history, browsertab,
+-                                 qtnetworkdownloads, downloads, greasemonkey)
++from qutebrowser.browser import (
++    urlmarks,
++    history,
++    browsertab,
++    qtnetworkdownloads,
++    downloads,
++    greasemonkey,
++)
+ from qutebrowser.browser.network import proxy
+ from qutebrowser.browser.webkit import cookies, cache
+ from qutebrowser.browser.webkit.network import networkmanager
+ from qutebrowser.extensions import loader
+ from qutebrowser.keyinput import macros
+ from qutebrowser.mainwindow import mainwindow, prompt
+-from qutebrowser.misc import (readline, ipc, savemanager, sessions,
+-                              crashsignal, earlyinit, sql, cmdhistory,
+-                              backendproblem, objects)
+-from qutebrowser.utils import (log, version, message, utils, urlutils, objreg,
+-                               usertypes, standarddir, error, qtutils)
++from qutebrowser.misc import (
++    readline,
++    ipc,
++    savemanager,
++    sessions,
++    crashsignal,
++    earlyinit,
++    sql,
++    cmdhistory,
++    backendproblem,
++    objects,
++)
++from qutebrowser.utils import (
++    log,
++    version,
++    message,
++    utils,
++    urlutils,
++    objreg,
++    usertypes,
++    standarddir,
++    error,
++    qtutils,
++)
++
+ # pylint: disable=unused-import
+ # We import those to run the cmdutils.register decorators.
+ from qutebrowser.mainwindow.statusbar import command
+ from qutebrowser.misc import utilcmds
++
+ # pylint: enable=unused-import
+ 
+ 
+@@ -89,10 +125,10 @@ q_app = None
+ def run(args):
+     """Initialize everything and run the application."""
+     if args.temp_basedir:
+-        args.basedir = tempfile.mkdtemp(prefix='qutebrowser-basedir-')
++        args.basedir = tempfile.mkdtemp(prefix="qutebrowser-basedir-")
+ 
+     quitter = Quitter(args)
+-    objreg.register('quitter', quitter)
++    objreg.register("quitter", quitter)
+ 
+     log.init.debug("Initializing directories...")
+     standarddir.init(args)
+@@ -114,14 +150,14 @@ def run(args):
+         sys.exit(usertypes.Exit.ok)
+ 
+     crash_handler = crashsignal.CrashHandler(
+-        app=q_app, quitter=quitter, args=args, parent=q_app)
++        app=q_app, quitter=quitter, args=args, parent=q_app
++    )
+     crash_handler.activate()
+-    objreg.register('crash-handler', crash_handler)
++    objreg.register("crash-handler", crash_handler)
+ 
+-    signal_handler = crashsignal.SignalHandler(app=q_app, quitter=quitter,
+-                                               parent=q_app)
++    signal_handler = crashsignal.SignalHandler(app=q_app, quitter=quitter, parent=q_app)
+     signal_handler.activate()
+-    objreg.register('signal-handler', signal_handler)
++    objreg.register("signal-handler", signal_handler)
+ 
+     try:
+         server = ipc.send_or_listen(args)
+@@ -132,13 +168,14 @@ def run(args):
+ 
+     if server is None:
+         if args.backend is not None:
+-            log.init.warning(
+-                "Backend from the running instance will be used")
++            log.init.warning("Backend from the running instance will be used")
+         sys.exit(usertypes.Exit.ok)
+     else:
+-        server.got_args.connect(lambda args, target_arg, cwd:
+-                                process_pos_args(args, cwd=cwd, via_ipc=True,
+-                                                 target_arg=target_arg))
++        server.got_args.connect(
++            lambda args, target_arg, cwd: process_pos_args(
++                args, cwd=cwd, via_ipc=True, target_arg=target_arg
++            )
++        )
+ 
+     init(args, crash_handler)
+     ret = qt_mainloop()
+@@ -173,23 +210,24 @@ def init(args, crash_handler):
+     try:
+         _init_modules(args, crash_handler)
+     except (OSError, UnicodeDecodeError, browsertab.WebTabError) as e:
+-        error.handle_fatal_exc(e, args, "Error while initializing!",
+-                               pre_text="Error while initializing")
++        error.handle_fatal_exc(
++            e, args, "Error while initializing!", pre_text="Error while initializing"
++        )
+         sys.exit(usertypes.Exit.err_init)
+ 
+     log.init.debug("Initializing eventfilter...")
+     event_filter = EventFilter(q_app)
+     q_app.installEventFilter(event_filter)
+-    objreg.register('event-filter', event_filter)
++    objreg.register("event-filter", event_filter)
+ 
+     log.init.debug("Connecting signals...")
+     q_app.focusChanged.connect(on_focus_changed)
+ 
+     _process_args(args)
+ 
+-    QDesktopServices.setUrlHandler('http', open_desktopservices_url)
+-    QDesktopServices.setUrlHandler('https', open_desktopservices_url)
+-    QDesktopServices.setUrlHandler('qute', open_desktopservices_url)
++    QDesktopServices.setUrlHandler("http", open_desktopservices_url)
++    QDesktopServices.setUrlHandler("https", open_desktopservices_url)
++    QDesktopServices.setUrlHandler("qute", open_desktopservices_url)
+ 
+     log.init.debug("Init done!")
+     crash_handler.raise_crashdlg()
+@@ -200,13 +238,13 @@ def _init_icon():
+     icon = QIcon()
+     fallback_icon = QIcon()
+     for size in [16, 24, 32, 48, 64, 96, 128, 256, 512]:
+-        filename = ':/icons/qutebrowser-{size}x{size}.png'.format(size=size)
++        filename = ":/icons/qutebrowser-{size}x{size}.png".format(size=size)
+         pixmap = QPixmap(filename)
+         if pixmap.isNull():
+             log.init.warning("Failed to load {}".format(filename))
+         else:
+             fallback_icon.addPixmap(pixmap)
+-    icon = QIcon.fromTheme('qutebrowser', fallback_icon)
++    icon = QIcon.fromTheme("qutebrowser", fallback_icon)
+     if icon.isNull():
+         log.init.warning("Failed to load icon")
+     else:
+@@ -217,13 +255,15 @@ def _process_args(args):
+     """Open startpage etc. and process commandline args."""
+     if not args.override_restore:
+         _load_session(args.session)
+-    session_manager = objreg.get('session-manager')
++    session_manager = objreg.get("session-manager")
+     if not session_manager.did_load:
+         log.init.debug("Initializing main window...")
+         if config.val.content.private_browsing and qtutils.is_single_process():
+-            err = Exception("Private windows are unavailable with "
+-                            "the single-process process model.")
+-            error.handle_fatal_exc(err, args, 'Cannot start in private mode')
++            err = Exception(
++                "Private windows are unavailable with "
++                "the single-process process model."
++            )
++            error.handle_fatal_exc(err, args, "Cannot start in private mode")
+             sys.exit(usertypes.Exit.err_init)
+         window = mainwindow.MainWindow(private=None)
+         if not args.nowindow:
+@@ -244,12 +284,12 @@ def _load_session(name):
+     Args:
+         name: The name of the session to load, or None to read state file.
+     """
+-    session_manager = objreg.get('session-manager')
+-    if name is None and session_manager.exists('_autosave'):
+-        name = '_autosave'
++    session_manager = objreg.get("session-manager")
++    if name is None and session_manager.exists("_autosave"):
++        name = "_autosave"
+     elif name is None:
+         try:
+-            name = configfiles.state['general']['session']
++            name = configfiles.state["general"]["session"]
+         except KeyError:
+             # No session given as argument and none in the session file ->
+             # start without loading a session
+@@ -262,12 +302,12 @@ def _load_session(name):
+     except sessions.SessionError as e:
+         message.error("Failed to load session {}: {}".format(name, e))
+     try:
+-        del configfiles.state['general']['session']
++        del configfiles.state["general"]["session"]
+     except KeyError:
+         pass
+     # If this was a _restart session, delete it.
+-    if name == '_restart':
+-        session_manager.delete('_restart')
++    if name == "_restart":
++        session_manager.delete("_restart")
+ 
+ 
+ def process_pos_args(args, via_ipc=False, cwd=None, target_arg=None):
+@@ -289,7 +329,7 @@ def process_pos_args(args, via_ipc=False, cwd=None, target_arg=None):
+         return
+     win_id = None
+     for cmd in args:
+-        if cmd.startswith(':'):
++        if cmd.startswith(":"):
+             if win_id is None:
+                 win_id = mainwindow.get_window(via_ipc, force_tab=True)
+             log.init.debug("Startup cmd {!r}".format(cmd))
+@@ -299,7 +339,7 @@ def process_pos_args(args, via_ipc=False, cwd=None, target_arg=None):
+             log.init.debug("Empty argument")
+             win_id = mainwindow.get_window(via_ipc, force_window=True)
+         else:
+-            if via_ipc and target_arg and target_arg != 'auto':
++            if via_ipc and target_arg and target_arg != "auto":
+                 open_target = target_arg
+             else:
+                 open_target = None
+@@ -308,8 +348,7 @@ def process_pos_args(args, via_ipc=False, cwd=None, target_arg=None):
+             try:
+                 url = urlutils.fuzzy_url(cmd, cwd, relative=True)
+             except urlutils.InvalidUrlError as e:
+-                message.error("Error in startup argument '{}': {}".format(
+-                    cmd, e))
++                message.error("Error in startup argument '{}': {}".format(cmd, e))
+             else:
+                 win_id = open_url(url, target=open_target, via_ipc=via_ipc)
+ 
+@@ -327,11 +366,9 @@ def open_url(url, target=None, no_raise=False, via_ipc=True):
+         ID of a window that was used to open URL
+     """
+     target = target or config.val.new_instance_open_target
+-    background = target in {'tab-bg', 'tab-bg-silent'}
+-    win_id = mainwindow.get_window(via_ipc, force_target=target,
+-                                   no_raise=no_raise)
+-    tabbed_browser = objreg.get('tabbed-browser', scope='window',
+-                                window=win_id)
++    background = target in {"tab-bg", "tab-bg-silent"}
++    win_id = mainwindow.get_window(via_ipc, force_target=target, no_raise=no_raise)
++    tabbed_browser = objreg.get("tabbed-browser", scope="window", window=win_id)
+     log.init.debug("About to open URL: {}".format(url.toDisplayString()))
+     tabbed_browser.tabopen(url, background=background, related=False)
+     return win_id
+@@ -351,8 +388,7 @@ def _open_startpage(win_id=None):
+     else:
+         window_ids = objreg.window_registry
+     for cur_win_id in list(window_ids):  # Copying as the dict could change
+-        tabbed_browser = objreg.get('tabbed-browser', scope='window',
+-                                    window=cur_win_id)
++        tabbed_browser = objreg.get("tabbed-browser", scope="window", window=cur_win_id)
+         if tabbed_browser.widget.count() == 0:
+             log.init.debug("Opening start pages")
+             for url in config.val.url.start_pages:
+@@ -369,34 +405,33 @@ def _open_special_pages(args):
+         # With --basedir given, don't open anything.
+         return
+ 
+-    general_sect = configfiles.state['general']
+-    tabbed_browser = objreg.get('tabbed-browser', scope='window',
+-                                window='last-focused')
++    general_sect = configfiles.state["general"]
++    tabbed_browser = objreg.get("tabbed-browser", scope="window", window="last-focused")
+ 
+     pages = [
+         # state, condition, URL
+-        ('quickstart-done',
+-         True,
+-         'https://www.qutebrowser.org/quickstart.html'),
+-
+-        ('config-migration-shown',
+-         os.path.exists(os.path.join(standarddir.config(),
+-                                     'qutebrowser.conf')),
+-         'qute://help/configuring.html'),
+-
+-        ('webkit-warning-shown',
+-         objects.backend == usertypes.Backend.QtWebKit,
+-         'qute://warning/webkit'),
+-
+-        ('old-qt-warning-shown',
+-         not qtutils.version_check('5.9'),
+-         'qute://warning/old-qt'),
++        ("quickstart-done", True, "https://www.qutebrowser.org/quickstart.html"),
++        (
++            "config-migration-shown",
++            os.path.exists(os.path.join(standarddir.config(), "qutebrowser.conf")),
++            "qute://help/configuring.html",
++        ),
++        (
++            "webkit-warning-shown",
++            objects.backend == usertypes.Backend.QtWebKit,
++            "qute://warning/webkit",
++        ),
++        (
++            "old-qt-warning-shown",
++            not qtutils.version_check("5.9"),
++            "qute://warning/old-qt",
++        ),
+     ]
+ 
+     for state, condition, url in pages:
+-        if general_sect.get(state) != '1' and condition:
++        if general_sect.get(state) != "1" and condition:
+             tabbed_browser.tabopen(QUrl(url), background=False)
+-            general_sect[state] = '1'
++            general_sect[state] = "1"
+ 
+ 
+ def on_focus_changed(_old, new):
+@@ -405,23 +440,21 @@ def on_focus_changed(_old, new):
+         return
+ 
+     if not isinstance(new, QWidget):
+-        log.misc.debug("on_focus_changed called with non-QWidget {!r}".format(
+-            new))
++        log.misc.debug("on_focus_changed called with non-QWidget {!r}".format(new))
+         return
+ 
+     window = new.window()
+     if isinstance(window, mainwindow.MainWindow):
+-        objreg.register('last-focused-main-window', window, update=True)
++        objreg.register("last-focused-main-window", window, update=True)
+         # A focused window must also be visible, and in this case we should
+         # consider it as the most recently looked-at window
+-        objreg.register('last-visible-main-window', window, update=True)
++        objreg.register("last-visible-main-window", window, update=True)
+ 
+ 
+ def open_desktopservices_url(url):
+     """Handler to open a URL via QDesktopServices."""
+     win_id = mainwindow.get_window(via_ipc=True, force_window=False)
+-    tabbed_browser = objreg.get('tabbed-browser', scope='window',
+-                                window=win_id)
++    tabbed_browser = objreg.get("tabbed-browser", scope="window", window=win_id)
+     tabbed_browser.tabopen(url)
+ 
+ 
+@@ -434,7 +467,7 @@ def _init_modules(args, crash_handler):
+     """
+     log.init.debug("Initializing save manager...")
+     save_manager = savemanager.SaveManager(q_app)
+-    objreg.register('save-manager', save_manager)
++    objreg.register("save-manager", save_manager)
+     configinit.late_init(save_manager)
+ 
+     log.init.debug("Checking backend requirements...")
+@@ -454,17 +487,18 @@ def _init_modules(args, crash_handler):
+ 
+     log.init.debug("Initializing readline-bridge...")
+     readline_bridge = readline.ReadlineBridge()
+-    objreg.register('readline-bridge', readline_bridge)
++    objreg.register("readline-bridge", readline_bridge)
+ 
+     try:
+         log.init.debug("Initializing SQL...")
+-        sql.init(os.path.join(standarddir.data(), 'history.sqlite'))
++        sql.init(os.path.join(standarddir.data(), "history.sqlite"))
+ 
+         log.init.debug("Initializing web history...")
+         history.init(q_app)
+-    except sql.KnownError as e:
+-        error.handle_fatal_exc(e, args, 'Error initializing SQL',
+-                               pre_text='Error initializing SQL')
++    except sql.SqlKnownError as e:
++        error.handle_fatal_exc(
++            e, args, "Error initializing SQL", pre_text="Error initializing SQL"
++        )
+         sys.exit(usertypes.Exit.err_init)
+ 
+     log.init.debug("Initializing command history...")
+@@ -480,25 +514,25 @@ def _init_modules(args, crash_handler):
+ 
+     log.init.debug("Initializing quickmarks...")
+     quickmark_manager = urlmarks.QuickmarkManager(q_app)
+-    objreg.register('quickmark-manager', quickmark_manager)
++    objreg.register("quickmark-manager", quickmark_manager)
+ 
+     log.init.debug("Initializing bookmarks...")
+     bookmark_manager = urlmarks.BookmarkManager(q_app)
+-    objreg.register('bookmark-manager', bookmark_manager)
++    objreg.register("bookmark-manager", bookmark_manager)
+ 
+     log.init.debug("Initializing cookies...")
+     cookie_jar = cookies.CookieJar(q_app)
+     ram_cookie_jar = cookies.RAMCookieJar(q_app)
+-    objreg.register('cookie-jar', cookie_jar)
+-    objreg.register('ram-cookie-jar', ram_cookie_jar)
++    objreg.register("cookie-jar", cookie_jar)
++    objreg.register("ram-cookie-jar", ram_cookie_jar)
+ 
+     log.init.debug("Initializing cache...")
+     diskcache = cache.DiskCache(standarddir.cache(), parent=q_app)
+-    objreg.register('cache', diskcache)
++    objreg.register("cache", diskcache)
+ 
+     log.init.debug("Initializing downloads...")
+     download_manager = qtnetworkdownloads.DownloadManager(parent=q_app)
+-    objreg.register('qtnetwork-download-manager', download_manager)
++    objreg.register("qtnetwork-download-manager", download_manager)
+ 
+     log.init.debug("Initializing Greasemonkey...")
+     greasemonkey.init()
+@@ -520,11 +554,7 @@ class Quitter:
+     """
+ 
+     def __init__(self, args):
+-        self.quit_status = {
+-            'crash': True,
+-            'tabs': False,
+-            'main': False,
+-        }
++        self.quit_status = {"crash": True, "tabs": False, "main": False}
+         self._shutting_down = False
+         self._args = args
+ 
+@@ -534,10 +564,10 @@ class Quitter:
+ 
+     def _compile_modules(self):
+         """Compile all modules to catch SyntaxErrors."""
+-        if os.path.basename(sys.argv[0]) == 'qutebrowser':
++        if os.path.basename(sys.argv[0]) == "qutebrowser":
+             # Launched via launcher script
+             return
+-        elif hasattr(sys, 'frozen'):
++        elif hasattr(sys, "frozen"):
+             return
+         else:
+             path = os.path.abspath(os.path.dirname(qutebrowser.__file__))
+@@ -547,9 +577,9 @@ class Quitter:
+ 
+         for dirpath, _dirnames, filenames in os.walk(path):
+             for fn in filenames:
+-                if os.path.splitext(fn)[1] == '.py' and os.path.isfile(fn):
++                if os.path.splitext(fn)[1] == ".py" and os.path.isfile(fn):
+                     with tokenize.open(os.path.join(dirpath, fn)) as f:
+-                        compile(f.read(), fn, 'exec')
++                        compile(f.read(), fn, "exec")
+ 
+     def _get_restart_args(self, pages=(), session=None, override_args=None):
+         """Get the current working directory and args to relaunch qutebrowser.
+@@ -564,17 +594,18 @@ class Quitter:
+                 args: The commandline as a list of strings.
+                 cwd: The current working directory as a string.
+         """
+-        if os.path.basename(sys.argv[0]) == 'qutebrowser':
++        if os.path.basename(sys.argv[0]) == "qutebrowser":
+             # Launched via launcher script
+             args = [sys.argv[0]]
+             cwd = None
+-        elif hasattr(sys, 'frozen'):
++        elif hasattr(sys, "frozen"):
+             args = [sys.executable]
+             cwd = os.path.abspath(os.path.dirname(sys.executable))
+         else:
+-            args = [sys.executable, '-m', 'qutebrowser']
++            args = [sys.executable, "-m", "qutebrowser"]
+             cwd = os.path.join(
+-                os.path.abspath(os.path.dirname(qutebrowser.__file__)), '..')
++                os.path.abspath(os.path.dirname(qutebrowser.__file__)), ".."
++            )
+             if not os.path.isdir(cwd):
+                 # Probably running from a python egg. Let's fallback to
+                 # cwd=None and see if that works out.
+@@ -585,54 +616,54 @@ class Quitter:
+         page_args = []
+         for win in pages:
+             page_args.extend(win)
+-            page_args.append('')
++            page_args.append("")
+ 
+         # Serialize the argparse namespace into json and pass that to the new
+         # process via --json-args.
+         # We do this as there's no way to "unparse" the namespace while
+         # ignoring some arguments.
+         argdict = vars(self._args)
+-        argdict['session'] = None
+-        argdict['url'] = []
+-        argdict['command'] = page_args[:-1]
+-        argdict['json_args'] = None
++        argdict["session"] = None
++        argdict["url"] = []
++        argdict["command"] = page_args[:-1]
++        argdict["json_args"] = None
+         # Ensure the given session (or none at all) gets opened.
+         if session is None:
+-            argdict['session'] = None
+-            argdict['override_restore'] = True
++            argdict["session"] = None
++            argdict["override_restore"] = True
+         else:
+-            argdict['session'] = session
+-            argdict['override_restore'] = False
++            argdict["session"] = session
++            argdict["override_restore"] = False
+         # Ensure :restart works with --temp-basedir
+         if self._args.temp_basedir:
+-            argdict['temp_basedir'] = False
+-            argdict['temp_basedir_restarted'] = True
++            argdict["temp_basedir"] = False
++            argdict["temp_basedir_restarted"] = True
+ 
+         if override_args is not None:
+             argdict.update(override_args)
+ 
+         # Dump the data
+         data = json.dumps(argdict)
+-        args += ['--json-args', data]
++        args += ["--json-args", data]
+ 
+         log.destroy.debug("args: {}".format(args))
+         log.destroy.debug("cwd: {}".format(cwd))
+ 
+         return args, cwd
+ 
+-    @cmdutils.register(instance='quitter', name='restart')
++    @cmdutils.register(instance="quitter", name="restart")
+     def restart_cmd(self):
+         """Restart qutebrowser while keeping existing tabs open."""
+         try:
+-            ok = self.restart(session='_restart')
++            ok = self.restart(session="_restart")
+         except sessions.SessionError as e:
+             log.destroy.exception("Failed to save session!")
+-            raise cmdutils.CommandError("Failed to save session: {}!"
+-                                        .format(e))
++            raise cmdutils.CommandError("Failed to save session: {}!".format(e))
+         except SyntaxError as e:
+             log.destroy.exception("Got SyntaxError")
+-            raise cmdutils.CommandError("SyntaxError in {}:{}: {}".format(
+-                e.filename, e.lineno, e))
++            raise cmdutils.CommandError(
++                "SyntaxError in {}:{}: {}".format(e.filename, e.lineno, e)
++            )
+         if ok:
+             self.shutdown(restart=True)
+ 
+@@ -658,11 +689,11 @@ class Quitter:
+         log.destroy.debug("sys.executable: {}".format(sys.executable))
+         log.destroy.debug("sys.path: {}".format(sys.path))
+         log.destroy.debug("sys.argv: {}".format(sys.argv))
+-        log.destroy.debug("frozen: {}".format(hasattr(sys, 'frozen')))
++        log.destroy.debug("frozen: {}".format(hasattr(sys, "frozen")))
+ 
+         # Save the session if one is given.
+         if session is not None:
+-            session_manager = objreg.get('session-manager')
++            session_manager = objreg.get("session-manager")
+             session_manager.save(session, with_private=True)
+ 
+         # Make sure we're not accepting a connection from the new process
+@@ -682,8 +713,8 @@ class Quitter:
+         else:
+             return True
+ 
+-    @cmdutils.register(instance='quitter', name='quit')
+-    @cmdutils.argument('session', completion=miscmodels.session)
++    @cmdutils.register(instance="quitter", name="quit")
++    @cmdutils.argument("session", completion=miscmodels.session)
+     def quit(self, save=False, session=None):
+         """Quit qutebrowser.
+ 
+@@ -701,8 +732,7 @@ class Quitter:
+         else:
+             self.shutdown()
+ 
+-    def shutdown(self, status=0, session=None, last_window=False,
+-                 restart=False):
++    def shutdown(self, status=0, session=None, last_window=False, restart=False):
+         """Quit qutebrowser.
+ 
+         Args:
+@@ -715,16 +745,19 @@ class Quitter:
+         if self._shutting_down:
+             return
+         self._shutting_down = True
+-        log.destroy.debug("Shutting down with status {}, session {}...".format(
+-            status, session))
+-        session_manager = objreg.get('session-manager', None)
++        log.destroy.debug(
++            "Shutting down with status {}, session {}...".format(status, session)
++        )
++        session_manager = objreg.get("session-manager", None)
+         if session_manager is not None:
+             if session is not None:
+-                session_manager.save(session, last_window=last_window,
+-                                     load_next_time=True)
++                session_manager.save(
++                    session, last_window=last_window, load_next_time=True
++                )
+             elif config.val.auto_save.session:
+-                session_manager.save(sessions.default, last_window=last_window,
+-                                     load_next_time=True)
++                session_manager.save(
++                    sessions.default, last_window=last_window, load_next_time=True
++                )
+ 
+         if prompt.prompt_queue.shutdown():
+             # If shutdown was called while we were asking a question, we're in
+@@ -732,10 +765,10 @@ class Quitter:
+             # one.
+             # This means we need to defer the real shutdown to when we're back
+             # in the real main event loop, or we'll get a segfault.
+-            log.destroy.debug("Deferring real shutdown because question was "
+-                              "active.")
+-            QTimer.singleShot(0, functools.partial(self._shutdown, status,
+-                                                   restart=restart))
++            log.destroy.debug("Deferring real shutdown because question was " "active.")
++            QTimer.singleShot(
++                0, functools.partial(self._shutdown, status, restart=restart)
++            )
+         else:
+             # If we have no questions to shut down, we are already in the real
+             # event loop, so we can shut down immediately.
+@@ -750,7 +783,7 @@ class Quitter:
+         # Remove eventfilter
+         try:
+             log.destroy.debug("Removing eventfilter...")
+-            event_filter = objreg.get('event-filter', None)
++            event_filter = objreg.get("event-filter", None)
+             if event_filter is not None:
+                 q_app.removeEventFilter(event_filter)
+         except AttributeError:
+@@ -764,30 +797,34 @@ class Quitter:
+             pass
+         # Save everything
+         try:
+-            save_manager = objreg.get('save-manager')
++            save_manager = objreg.get("save-manager")
+         except KeyError:
+-            log.destroy.debug("Save manager not initialized yet, so not "
+-                              "saving anything.")
++            log.destroy.debug(
++                "Save manager not initialized yet, so not " "saving anything."
++            )
+         else:
+             for key in save_manager.saveables:
+                 try:
+                     save_manager.save(key, is_exit=True)
+                 except OSError as e:
+                     error.handle_fatal_exc(
+-                        e, self._args, "Error while saving!",
+-                        pre_text="Error while saving {}".format(key))
++                        e,
++                        self._args,
++                        "Error while saving!",
++                        pre_text="Error while saving {}".format(key),
++                    )
+         # Disable storage so removing tempdir will work
+         websettings.shutdown()
+         # Disable application proxy factory to fix segfaults with Qt 5.10.1
+         proxy.shutdown()
+         # Re-enable faulthandler to stdout, then remove crash log
+         log.destroy.debug("Deactivating crash log...")
+-        objreg.get('crash-handler').destroy_crashlogfile()
++        objreg.get("crash-handler").destroy_crashlogfile()
+         # Delete temp basedir
+-        if ((self._args.temp_basedir or self._args.temp_basedir_restarted) and
+-                not restart):
+-            atexit.register(shutil.rmtree, self._args.basedir,
+-                            ignore_errors=True)
++        if (
++            self._args.temp_basedir or self._args.temp_basedir_restarted
++        ) and not restart:
++            atexit.register(shutil.rmtree, self._args.basedir, ignore_errors=True)
+         # Delete temp download dir
+         downloads.temp_download_manager.cleanup()
+         # If we don't kill our custom handler here we might get segfaults
+@@ -795,8 +832,8 @@ class Quitter:
+         qInstallMessageHandler(None)
+         # Now we can hopefully quit without segfaults
+         log.destroy.debug("Deferring QApplication::exit...")
+-        objreg.get('signal-handler').deactivate()
+-        session_manager = objreg.get('session-manager', None)
++        objreg.get("signal-handler").deactivate()
++        session_manager = objreg.get("session-manager", None)
+         if session_manager is not None:
+             session_manager.delete_autosave()
+         # We use a singleshot timer to exit here to minimize the likelihood of
+@@ -830,8 +867,8 @@ class Application(QApplication):
+         log.init.debug("Initializing application...")
+ 
+         self._args = args
+-        objreg.register('args', args)
+-        objreg.register('app', self)
++        objreg.register("args", args)
++        objreg.register("app", self)
+ 
+         self.launch_time = datetime.datetime.now()
+         self.focusObjectChanged.connect(self.on_focus_object_changed)
+@@ -864,10 +901,13 @@ class Application(QApplication):
+     def exit(self, status):
+         """Extend QApplication::exit to log the event."""
+         log.destroy.debug("Now calling QApplication::exit.")
+-        if 'debug-exit' in self._args.debug_flags:
++        if "debug-exit" in self._args.debug_flags:
+             if hunter is None:
+-                print("Not logging late shutdown because hunter could not be "
+-                      "imported!", file=sys.stderr)
++                print(
++                    "Not logging late shutdown because hunter could not be "
++                    "imported!",
++                    file=sys.stderr,
++                )
+             else:
+                 print("Now logging late shutdown.", file=sys.stderr)
+                 hunter.trace()
+@@ -907,7 +947,7 @@ class EventFilter(QObject):
+             # event through.
+             return False
+         try:
+-            man = objreg.get('mode-manager', scope='window', window='current')
++            man = objreg.get("mode-manager", scope="window", window="current")
+             return man.handle_event(event)
+         except objreg.RegistryUnavailableError:
+             # No window available yet, or not a MainWindow
+diff --git a/qutebrowser/browser/hints.py b/qutebrowser/browser/hints.py
+index 13c89ff6b..361a33691 100644
+--- a/qutebrowser/browser/hints.py
++++ b/qutebrowser/browser/hints.py
+@@ -26,6 +26,7 @@ import re
+ import html
+ import enum
+ from string import ascii_lowercase
++from pypinyin import lazy_pinyin, Style
+ 
+ import attr
+ from PyQt5.QtCore import pyqtSlot, QObject, Qt, QUrl
+@@ -433,7 +434,7 @@ class HintManager(QObject):
+                 message.error(str(e))
+                 # falls back on letter hints
+         if hint_mode == 'number':
+-            chars = '0123456789'
++            chars = '1234567890'
+         else:
+             chars = config.val.hints.chars
+         min_chars = config.val.hints.min_chars
+@@ -574,7 +575,8 @@ class HintManager(QObject):
+         if not filterstr:
+             return True
+         filterstr = filterstr.casefold()
+-        elemstr = elemstr.casefold()
++        elemstr = ''.join(lazy_pinyin(elemstr,
++                                      style=Style.FIRST_LETTER)).casefold()
+         # Do multi-word matching
+         return all(word in elemstr for word in filterstr.split())
+ 
+@@ -584,7 +586,8 @@ class HintManager(QObject):
+         if not filterstr:
+             return False
+         filterstr = filterstr.casefold()
+-        elemstr = elemstr.casefold()
++        elemstr = ''.join(lazy_pinyin(elemstr,
++                                      style=Style.FIRST_LETTER)).casefold()
+         return filterstr == elemstr
+ 
+     def _start_cb(self, elems):
+diff --git a/qutebrowser/browser/history.py b/qutebrowser/browser/history.py
+index d49000d29..f39f8dcdd 100644
+--- a/qutebrowser/browser/history.py
++++ b/qutebrowser/browser/history.py
+@@ -76,13 +76,12 @@ class CompletionMetaInfo(sql.SqlTable):
+ 
+     """Table containing meta-information for the completion."""
+ 
+-    KEYS = {
+-        'force_rebuild': False,
+-    }
++    KEYS = {"force_rebuild": False}
+ 
+     def __init__(self, parent=None):
+-        super().__init__("CompletionMetaInfo", ['key', 'value'],
+-                         constraints={'key': 'PRIMARY KEY'})
++        super().__init__(
++            "CompletionMetaInfo", ["key", "value"], constraints={"key": "PRIMARY KEY"}
++        )
+         for key, default in self.KEYS.items():
+             if key not in self:
+                 self[key] = default
+@@ -93,18 +92,17 @@ class CompletionMetaInfo(sql.SqlTable):
+ 
+     def __contains__(self, key):
+         self._check_key(key)
+-        query = self.contains_query('key')
++        query = self.contains_query("key")
+         return query.run(val=key).value()
+ 
+     def __getitem__(self, key):
+         self._check_key(key)
+-        query = sql.Query('SELECT value FROM CompletionMetaInfo '
+-                          'WHERE key = :key')
++        query = sql.Query("SELECT value FROM CompletionMetaInfo " "WHERE key = :key")
+         return query.run(key=key).value()
+ 
+     def __setitem__(self, key, value):
+         self._check_key(key)
+-        self.insert({'key': key, 'value': value}, replace=True)
++        self.insert({"key": key, "value": value}, replace=True)
+ 
+ 
+ class CompletionHistory(sql.SqlTable):
+@@ -112,12 +110,17 @@ class CompletionHistory(sql.SqlTable):
+     """History which only has the newest entry for each URL."""
+ 
+     def __init__(self, parent=None):
+-        super().__init__("CompletionHistory", ['url', 'title', 'last_atime'],
+-                         constraints={'url': 'PRIMARY KEY',
+-                                      'title': 'NOT NULL',
+-                                      'last_atime': 'NOT NULL'},
+-                         parent=parent)
+-        self.create_index('CompletionHistoryAtimeIndex', 'last_atime')
++        super().__init__(
++            "CompletionHistory",
++            ["url", "title", "last_atime"],
++            constraints={
++                "url": "PRIMARY KEY",
++                "title": "NOT NULL",
++                "last_atime": "NOT NULL",
++            },
++            parent=parent,
++        )
++        self.create_index("CompletionHistoryAtimeIndex", "last_atime")
+ 
+ 
+ class WebHistory(sql.SqlTable):
+@@ -141,12 +144,17 @@ class WebHistory(sql.SqlTable):
+     _PROGRESS_THRESHOLD = 1000
+ 
+     def __init__(self, progress, parent=None):
+-        super().__init__("History", ['url', 'title', 'atime', 'redirect'],
+-                         constraints={'url': 'NOT NULL',
+-                                      'title': 'NOT NULL',
+-                                      'atime': 'NOT NULL',
+-                                      'redirect': 'NOT NULL'},
+-                         parent=parent)
++        super().__init__(
++            "History",
++            ["url", "title", "atime", "redirect"],
++            constraints={
++                "url": "NOT NULL",
++                "title": "NOT NULL",
++                "atime": "NOT NULL",
++                "redirect": "NOT NULL",
++            },
++            parent=parent,
++        )
+         self._progress = progress
+         # Store the last saved url to avoid duplicate immedate saves.
+         self._last_url = None
+@@ -154,32 +162,36 @@ class WebHistory(sql.SqlTable):
+         self.completion = CompletionHistory(parent=self)
+         self.metainfo = CompletionMetaInfo(parent=self)
+ 
+-        if sql.Query('pragma user_version').run().value() < _USER_VERSION:
++        if sql.Query("pragma user_version").run().value() < _USER_VERSION:
+             self.completion.delete_all()
+-        if self.metainfo['force_rebuild']:
++        if self.metainfo["force_rebuild"]:
+             self.completion.delete_all()
+-            self.metainfo['force_rebuild'] = False
++            self.metainfo["force_rebuild"] = False
+ 
+         if not self.completion:
+             # either the table is out-of-date or the user wiped it manually
+             self._rebuild_completion()
+ 
+-        self.create_index('HistoryIndex', 'url')
+-        self.create_index('HistoryAtimeIndex', 'atime')
+-        self._contains_query = self.contains_query('url')
+-        self._between_query = sql.Query('SELECT * FROM History '
+-                                        'where not redirect '
+-                                        'and not url like "qute://%" '
+-                                        'and atime > :earliest '
+-                                        'and atime <= :latest '
+-                                        'ORDER BY atime desc')
+-
+-        self._before_query = sql.Query('SELECT * FROM History '
+-                                       'where not redirect '
+-                                       'and not url like "qute://%" '
+-                                       'and atime <= :latest '
+-                                       'ORDER BY atime desc '
+-                                       'limit :limit offset :offset')
++        self.create_index("HistoryIndex", "url")
++        self.create_index("HistoryAtimeIndex", "atime")
++        self._contains_query = self.contains_query("url")
++        self._between_query = sql.Query(
++            "SELECT * FROM History "
++            "where not redirect "
++            'and not url like "qute://%" '
++            "and atime > :earliest "
++            "and atime <= :latest "
++            "ORDER BY atime desc"
++        )
++
++        self._before_query = sql.Query(
++            "SELECT * FROM History "
++            "where not redirect "
++            'and not url like "qute://%" '
++            "and atime <= :latest "
++            "ORDER BY atime desc "
++            "limit :limit offset :offset"
++        )
+ 
+         config.instance.changed.connect(self._on_config_changed)
+ 
+@@ -189,28 +201,30 @@ class WebHistory(sql.SqlTable):
+     def __contains__(self, url):
+         return self._contains_query.run(val=url).value()
+ 
+-    @config.change_filter('completion.web_history.exclude')
++    @config.change_filter("completion.web_history.exclude")
+     def _on_config_changed(self):
+-        self.metainfo['force_rebuild'] = True
++        self.metainfo["force_rebuild"] = True
+ 
+     @contextlib.contextmanager
+     def _handle_sql_errors(self):
+         try:
+             yield
+-        except sql.KnownError as e:
++        except sql.SqlKnownError as e:
+             message.error("Failed to write history: {}".format(e.text()))
+ 
+     def _is_excluded(self, url):
+         """Check if the given URL is excluded from the completion."""
+-        patterns = config.cache['completion.web_history.exclude']
++        patterns = config.cache["completion.web_history.exclude"]
+         return any(pattern.matches(url) for pattern in patterns)
+ 
+     def _rebuild_completion(self):
+-        data = {'url': [], 'title': [], 'last_atime': []}
++        data = {"url": [], "title": [], "last_atime": []}
+         # select the latest entry for each url
+-        q = sql.Query('SELECT url, title, max(atime) AS atime FROM History '
+-                      'WHERE NOT redirect and url NOT LIKE "qute://back%" '
+-                      'GROUP BY url ORDER BY atime asc')
++        q = sql.Query(
++            "SELECT url, title, max(atime) AS atime FROM History "
++            'WHERE NOT redirect and url NOT LIKE "qute://back%" '
++            "GROUP BY url ORDER BY atime asc"
++        )
+         entries = list(q.run())
+ 
+         if len(entries) > self._PROGRESS_THRESHOLD:
+@@ -222,18 +236,18 @@ class WebHistory(sql.SqlTable):
+             url = QUrl(entry.url)
+             if self._is_excluded(url):
+                 continue
+-            data['url'].append(self._format_completion_url(url))
+-            data['title'].append(entry.title)
+-            data['last_atime'].append(entry.atime)
++            data["url"].append(self._format_completion_url(url))
++            data["title"].append(entry.title)
++            data["last_atime"].append(entry.atime)
+ 
+         self._progress.finish()
+ 
+         self.completion.insert_batch(data, replace=True)
+-        sql.Query('pragma user_version = {}'.format(_USER_VERSION)).run()
++        sql.Query("pragma user_version = {}".format(_USER_VERSION)).run()
+ 
+     def get_recent(self):
+         """Get the most recent history entries."""
+-        return self.select(sort_by='atime', sort_order='desc', limit=100)
++        return self.select(sort_by="atime", sort_order="desc", limit=100)
+ 
+     def entries_between(self, earliest, latest):
+         """Iterate non-redirect, non-qute entries between two timestamps.
+@@ -256,7 +270,7 @@ class WebHistory(sql.SqlTable):
+         self._before_query.run(latest=latest, limit=limit, offset=offset)
+         return iter(self._before_query)
+ 
+-    @cmdutils.register(name='history-clear', instance='web-history')
++    @cmdutils.register(name="history-clear", instance="web-history")
+     def clear(self, force=False):
+         """Clear all browsing history.
+ 
+@@ -270,8 +284,9 @@ class WebHistory(sql.SqlTable):
+         if force:
+             self._do_clear()
+         else:
+-            message.confirm_async(yes_action=self._do_clear,
+-                                  title="Clear all browsing history?")
++            message.confirm_async(
++                yes_action=self._do_clear, title="Clear all browsing history?"
++            )
+ 
+     def _do_clear(self):
+         with self._handle_sql_errors():
+@@ -288,8 +303,8 @@ class WebHistory(sql.SqlTable):
+         """
+         qurl = QUrl(url)
+         qtutils.ensure_valid(qurl)
+-        self.delete('url', self._format_url(qurl))
+-        self.completion.delete('url', self._format_completion_url(qurl))
++        self.delete("url", self._format_url(qurl))
++        self.completion.delete("url", self._format_completion_url(qurl))
+         if self._last_url == url:
+             self._last_url = None
+         self.url_cleared.emit(qurl)
+@@ -297,17 +312,18 @@ class WebHistory(sql.SqlTable):
+     @pyqtSlot(QUrl, QUrl, str)
+     def add_from_tab(self, url, requested_url, title):
+         """Add a new history entry as slot, called from a BrowserTab."""
+-        if any(url.scheme() in ('data', 'view-source') or
+-               (url.scheme(), url.host()) == ('qute', 'back')
+-               for url in (url, requested_url)):
++        if any(
++            url.scheme() in ("data", "view-source")
++            or (url.scheme(), url.host()) == ("qute", "back")
++            for url in (url, requested_url)
++        ):
+             return
+         if url.isEmpty():
+             # things set via setHtml
+             return
+ 
+         no_formatting = QUrl.UrlFormattingOption(0)
+-        if (requested_url.isValid() and
+-                not requested_url.matches(url, no_formatting)):
++        if requested_url.isValid() and not requested_url.matches(url, no_formatting):
+             # If the url of the page is different than the url of the link
+             # originally clicked, save them both.
+             self.add_url(requested_url, title, redirect=True)
+@@ -328,25 +344,32 @@ class WebHistory(sql.SqlTable):
+             log.misc.warning("Ignoring invalid URL being added to history")
+             return
+ 
+-        if 'no-sql-history' in objreg.get('args').debug_flags:
++        if "no-sql-history" in objreg.get("args").debug_flags:
+             return
+ 
+         atime = int(atime) if (atime is not None) else int(time.time())
+ 
+         with self._handle_sql_errors():
+-            self.insert({'url': self._format_url(url),
+-                         'title': title,
+-                         'atime': atime,
+-                         'redirect': redirect})
++            self.insert(
++                {
++                    "url": self._format_url(url),
++                    "title": title,
++                    "atime": atime,
++                    "redirect": redirect,
++                }
++            )
+ 
+             if redirect or self._is_excluded(url):
+                 return
+ 
+-            self.completion.insert({
+-                'url': self._format_completion_url(url),
+-                'title': title,
+-                'last_atime': atime
+-            }, replace=True)
++            self.completion.insert(
++                {
++                    "url": self._format_completion_url(url),
++                    "title": title,
++                    "last_atime": atime,
++                },
++                replace=True,
++            )
+ 
+     def _format_url(self, url):
+         return url.toString(QUrl.RemovePassword | QUrl.FullyEncoded)
+@@ -354,7 +377,7 @@ class WebHistory(sql.SqlTable):
+     def _format_completion_url(self, url):
+         return url.toString(QUrl.RemovePassword)
+ 
+-    @cmdutils.register(instance='web-history', debug=True)
++    @cmdutils.register(instance="web-history", debug=True)
+     def debug_dump_history(self, dest):
+         """Dump the history to a file in the old pre-SQL format.
+ 
+@@ -363,17 +386,17 @@ class WebHistory(sql.SqlTable):
+         """
+         dest = os.path.expanduser(dest)
+ 
+-        lines = ('{}{} {} {}'
+-                 .format(int(x.atime), '-r' * x.redirect, x.url, x.title)
+-                 for x in self.select(sort_by='atime', sort_order='asc'))
++        lines = (
++            "{}{} {} {}".format(int(x.atime), "-r" * x.redirect, x.url, x.title)
++            for x in self.select(sort_by="atime", sort_order="asc")
++        )
+ 
+         try:
+-            with open(dest, 'w', encoding='utf-8') as f:
+-                f.write('\n'.join(lines))
++            with open(dest, "w", encoding="utf-8") as f:
++                f.write("\n".join(lines))
+             message.info("Dumped history to {}".format(dest))
+         except OSError as e:
+-            raise cmdutils.CommandError('Could not write history: {}'
+-                                        .format(e))
++            raise cmdutils.CommandError("Could not write history: {}".format(e))
+ 
+ 
+ def init(parent=None):
+@@ -384,8 +407,9 @@ def init(parent=None):
+     """
+     progress = HistoryProgress()
+     history = WebHistory(progress=progress, parent=parent)
+-    objreg.register('web-history', history)
++    objreg.register("web-history", history)
+ 
+     if objects.backend == usertypes.Backend.QtWebKit:  # pragma: no cover
+         from qutebrowser.browser.webkit import webkithistory
++
+         webkithistory.init(history)
+diff --git a/qutebrowser/completion/models/histcategory.py b/qutebrowser/completion/models/histcategory.py
+index 98589d287..1adf05e0f 100644
+--- a/qutebrowser/completion/models/histcategory.py
++++ b/qutebrowser/completion/models/histcategory.py
+@@ -47,17 +47,25 @@ class HistoryCategory(QSqlQueryModel):
+         assert max_items != 0
+ 
+         if max_items < 0:
+-            return ''
+-
+-        min_atime = sql.Query(' '.join([
+-            'SELECT min(last_atime) FROM',
+-            '(SELECT last_atime FROM CompletionHistory',
+-            'ORDER BY last_atime DESC LIMIT :limit)',
+-        ])).run(limit=max_items).value()
++            return ""
++
++        min_atime = (
++            sql.Query(
++                " ".join(
++                    [
++                        "SELECT min(last_atime) FROM",
++                        "(SELECT last_atime FROM CompletionHistory",
++                        "ORDER BY last_atime DESC LIMIT :limit)",
++                    ]
++                )
++            )
++            .run(limit=max_items)
++            .value()
++        )
+ 
+         if not min_atime:
+             # if there are no history items, min_atime may be '' (issue #2849)
+-            return ''
++            return ""
+ 
+         return "AND last_atime >= {}".format(min_atime)
+ 
+@@ -68,54 +76,60 @@ class HistoryCategory(QSqlQueryModel):
+             pattern: string pattern to filter by.
+         """
+         # escape to treat a user input % or _ as a literal, not a wildcard
+-        pattern = pattern.replace('%', '\\%')
+-        pattern = pattern.replace('_', '\\_')
+-        words = ['%{}%'.format(w) for w in pattern.split(' ')]
++        pattern = pattern.replace("%", "\\%")
++        pattern = pattern.replace("_", "\\_")
++        words = ["%{}%".format(w) for w in pattern.split(" ")]
+ 
+         # build a where clause to match all of the words in any order
+         # given the search term "a b", the WHERE clause would be:
+         # (url LIKE '%a%' OR title LIKE '%a%') AND
+         # (url LIKE '%b%' OR title LIKE '%b%')
+-        where_clause = ' AND '.join(
+-            "(url LIKE :{val} escape '\\' OR title LIKE :{val} escape '\\')"
+-            .format(val=i) for i in range(len(words)))
++        where_clause = " AND ".join(
++            "(url LIKE :{val} escape '\\' OR title LIKE :{val} escape '\\')".format(
++                val=i
++            )
++            for i in range(len(words))
++        )
+ 
+         # replace ' in timestamp-format to avoid breaking the query
+-        timestamp_format = config.val.completion.timestamp_format or ''
+-        timefmt = ("strftime('{}', last_atime, 'unixepoch', 'localtime')"
+-                   .format(timestamp_format.replace("'", "`")))
++        timestamp_format = config.val.completion.timestamp_format or ""
++        timefmt = "strftime('{}', last_atime, 'unixepoch', 'localtime')".format(
++            timestamp_format.replace("'", "`")
++        )
+ 
+         try:
+-            if (not self._query or
+-                    len(words) != len(self._query.bound_values())):
++            if not self._query or len(words) != len(self._query.bound_values()):
+                 # if the number of words changed, we need to generate a new
+                 # query otherwise, we can reuse the prepared query for
+                 # performance
+-                self._query = sql.Query(' '.join([
+-                    "SELECT url, title, {}".format(timefmt),
+-                    "FROM CompletionHistory",
+-                    # the incoming pattern will have literal % and _ escaped we
+-                    # need to tell SQL to treat '\' as an escape character
+-                    'WHERE ({})'.format(where_clause),
+-                    self._atime_expr(),
+-                    "ORDER BY last_atime DESC",
+-                ]), forward_only=False)
+-
+-            with debug.log_time('sql', 'Running completion query'):
+-                self._query.run(**{
+-                    str(i): w for i, w in enumerate(words)})
+-        except sql.KnownError as e:
++                self._query = sql.Query(
++                    " ".join(
++                        [
++                            "SELECT url, title, {}".format(timefmt),
++                            "FROM CompletionHistory",
++                            # the incoming pattern will have literal % and _ escaped we
++                            # need to tell sql to treat '\' as an escape character
++                            "WHERE ({})".format(where_clause),
++                            self._atime_expr(),
++                            "ORDER BY last_atime DESC",
++                        ]
++                    ),
++                    forward_only=False,
++                )
++
++            with debug.log_time("sql", "Running completion query"):
++                self._query.run(**{str(i): w for i, w in enumerate(words)})
++        except sql.SqlKnownError as e:
+             # Sometimes, the query we built up was invalid, for example,
+             # due to a large amount of words.
+-            # Also catches failures in the DB we can't solve.
+-            message.error("Error with SQL query: {}".format(e.text()))
++            message.error("Error with SQL Query: {}".format(e.text()))
+             return
+         self.setQuery(self._query.query)
+ 
+     def removeRows(self, row, _count, _parent=None):
+         """Override QAbstractItemModel::removeRows to re-run SQL query."""
+         # re-run query to reload updated table
+-        with debug.log_time('sql', 'Re-running completion query post-delete'):
++        with debug.log_time("sql", "Re-running completion query post-delete"):
+             self._query.run()
+         self.setQuery(self._query.query)
+         while self.rowCount() < row:
+diff --git a/qutebrowser/misc/sql.py b/qutebrowser/misc/sql.py
+index c9b260502..c1de73704 100644
+--- a/qutebrowser/misc/sql.py
++++ b/qutebrowser/misc/sql.py
+@@ -35,15 +35,15 @@ class SqliteErrorCode:
+     in qutebrowser here.
+     """
+ 
+-    UNKNOWN = '-1'
+-    ERROR = '1'  # generic error code
+-    BUSY = '5'  # database is locked
+-    READONLY = '8'  # attempt to write a readonly database
+-    IOERR = '10'  # disk I/O error
+-    CORRUPT = '11'  # database disk image is malformed
+-    FULL = '13'  # database or disk is full
+-    CANTOPEN = '14'  # unable to open database file
+-    CONSTRAINT = '19'  # UNIQUE constraint failed
++    UNKNOWN = "-1"
++    ERROR = "1"  # generic error code
++    BUSY = "5"  # database is locked
++    READONLY = "8"  # attempt to write a readonly database
++    IOERR = "10"  # disk I/O error
++    CORRUPT = "11"  # database disk image is malformed
++    FULL = "13"  # database or disk is full
++    CANTOPEN = "14"  # unable to open database file
++    CONSTRAINT = "19"  # UNIQUE constraint failed
+ 
+ 
+ class Error(Exception):
+@@ -65,7 +65,7 @@ class Error(Exception):
+             return self.error.databaseText()
+ 
+ 
+-class KnownError(Error):
++class SqlKnownError(SqlError):
+ 
+     """Raised on an error interacting with the SQL database.
+ 
+@@ -74,7 +74,7 @@ class KnownError(Error):
+     """
+ 
+ 
+-class BugError(Error):
++class SqlBugError(SqlError):
+ 
+     """Raised on an error interacting with the SQL database.
+ 
+@@ -83,14 +83,13 @@ class BugError(Error):
+ 
+ 
+ def raise_sqlite_error(msg, error):
+-    """Raise either a BugError or KnownError."""
++    """Raise either a SqlBugError or SqlKnownError."""
+     error_code = error.nativeErrorCode()
+     database_text = error.databaseText()
+     driver_text = error.driverText()
+ 
+     log.sql.debug("SQL error:")
+-    log.sql.debug("type: {}".format(
+-        debug.qenum_key(QSqlError, error.type())))
++    log.sql.debug("type: {}".format(debug.qenum_key(QSqlError, error.type())))
+     log.sql.debug("database text: {}".format(database_text))
+     log.sql.debug("driver text: {}".format(driver_text))
+     log.sql.debug("error code: {}".format(error_code))
+@@ -107,35 +106,33 @@ def raise_sqlite_error(msg, error):
+     # WORKAROUND for https://bugreports.qt.io/browse/QTBUG-70506
+     # We don't know what the actual error was, but let's assume it's not us to
+     # blame... Usually this is something like an unreadable database file.
+-    qtbug_70506 = (error_code == SqliteErrorCode.UNKNOWN and
+-                   driver_text == "Error opening database" and
+-                   database_text == "out of memory")
++    qtbug_70506 = (
++        error_code == SqliteErrorCode.UNKNOWN
++        and driver_text == "Error opening database"
++        and database_text == "out of memory"
++    )
+ 
+-    # https://github.com/qutebrowser/qutebrowser/issues/4681
+-    # If the query we built was too long
+-    too_long_err = (
+-        error_code == SqliteErrorCode.ERROR and
+-        driver_text == "Unable to execute statement" and
+-        (database_text.startswith("Expression tree is too large") or
+-         database_text == "too many SQL variables"))
++    if (error_code in environmental_errors or qtbug_70506) or (
++        error_code == SqliteErrorCode.ERROR
++        and driver_text == "Unable to execute statement"
++        and database_text.startswith("Expression tree is too large")
++    ):
++        raise SqlKnownError(msg, error)
+ 
+-    if error_code in known_errors or qtbug_70506 or too_long_err:
+-        raise KnownError(msg, error)
+-
+-    raise BugError(msg, error)
++    raise SqlBugError(msg, error)
+ 
+ 
+ def init(db_path):
+     """Initialize the SQL database connection."""
+-    database = QSqlDatabase.addDatabase('QSQLITE')
++    database = QSqlDatabase.addDatabase("QSQLITE")
+     if not database.isValid():
+-        raise KnownError('Failed to add database. Are sqlite and Qt sqlite '
+-                         'support installed?')
++        raise SqlKnownError(
++            "Failed to add database. Are sqlite and Qt " "sqlite support installed?"
++        )
+     database.setDatabaseName(db_path)
+     if not database.open():
+         error = database.lastError()
+-        msg = "Failed to open sqlite database at {}: {}".format(db_path,
+-                                                                error.text())
++        msg = "Failed to open sqlite database at {}: {}".format(db_path, error.text())
+         raise_sqlite_error(msg, error)
+ 
+     # Enable write-ahead-logging and reduce disk write frequency
+@@ -153,13 +150,13 @@ def version():
+     """Return the sqlite version string."""
+     try:
+         if not QSqlDatabase.database().isOpen():
+-            init(':memory:')
++            init(":memory:")
+             ver = Query("select sqlite_version()").run().value()
+             close()
+             return ver
+         return Query("select sqlite_version()").run().value()
+-    except KnownError as e:
+-        return 'UNAVAILABLE ({})'.format(e)
++    except SqlKnownError as e:
++        return "UNAVAILABLE ({})".format(e)
+ 
+ 
+ class Query:
+@@ -178,7 +175,7 @@ class Query:
+ 
+         log.sql.debug('Preparing SQL query: "{}"'.format(querystr))
+         ok = self.query.prepare(querystr)
+-        self._check_ok('prepare', ok)
++        self._check_ok("prepare", ok)
+         self.query.setForwardOnly(forward_only)
+ 
+     def __iter__(self):
+@@ -186,7 +183,7 @@ class Query:
+             raise BugError("Cannot iterate inactive query")
+         rec = self.query.record()
+         fields = [rec.fieldName(i) for i in range(rec.count())]
+-        rowtype = collections.namedtuple('ResultRow', fields)
++        rowtype = collections.namedtuple("ResultRow", fields)
+ 
+         while self.query.next():
+             rec = self.query.record()
+@@ -196,50 +193,47 @@ class Query:
+         if not ok:
+             query = self.query.lastQuery()
+             error = self.query.lastError()
+-            msg = 'Failed to {} query "{}": "{}"'.format(step, query,
+-                                                         error.text())
++            msg = 'Failed to {} query "{}": "{}"'.format(step, query, error.text())
+             raise_sqlite_error(msg, error)
+ 
+     def _bind_values(self, values):
+         for key, val in values.items():
+-            self.query.bindValue(':{}'.format(key), val)
++            self.query.bindValue(":{}".format(key), val)
+         if any(val is None for val in self.bound_values().values()):
+             raise BugError("Missing bound values!")
+ 
+     def run(self, **values):
+         """Execute the prepared query."""
+-        log.sql.debug('Running SQL query: "{}"'.format(
+-            self.query.lastQuery()))
++        log.sql.debug('Running SQL query: "{}"'.format(self.query.lastQuery()))
+ 
+         self._bind_values(values)
+-        log.sql.debug('query bindings: {}'.format(self.bound_values()))
++        log.sql.debug("query bindings: {}".format(self.bound_values()))
+ 
+         ok = self.query.exec_()
+-        self._check_ok('exec', ok)
++        self._check_ok("exec", ok)
+ 
+         return self
+ 
+     def run_batch(self, values):
+         """Execute the query in batch mode."""
+-        log.sql.debug('Running SQL query (batch): "{}"'.format(
+-            self.query.lastQuery()))
++        log.sql.debug('Running SQL query (batch): "{}"'.format(self.query.lastQuery()))
+ 
+         self._bind_values(values)
+ 
+         db = QSqlDatabase.database()
+         ok = db.transaction()
+-        self._check_ok('transaction', ok)
++        self._check_ok("transaction", ok)
+ 
+         ok = self.query.execBatch()
+         try:
+-            self._check_ok('execBatch', ok)
++            self._check_ok("execBatch", ok)
+         except Error:
+             # Not checking the return value here, as we're failing anyways...
+             db.rollback()
+             raise
+ 
+         ok = db.commit()
+-        self._check_ok('commit', ok)
++        self._check_ok("commit", ok)
+ 
+     def value(self):
+         """Return the result of a single-value query (e.g. an EXISTS)."""
+@@ -281,10 +275,14 @@ class SqlTable(QObject):
+         self._name = name
+ 
+         constraints = constraints or {}
+-        column_defs = ['{} {}'.format(field, constraints.get(field, ''))
+-                       for field in fields]
+-        q = Query("CREATE TABLE IF NOT EXISTS {name} ({column_defs})"
+-                  .format(name=name, column_defs=', '.join(column_defs)))
++        column_defs = [
++            "{} {}".format(field, constraints.get(field, "")) for field in fields
++        ]
++        q = Query(
++            "CREATE TABLE IF NOT EXISTS {name} ({column_defs})".format(
++                name=name, column_defs=", ".join(column_defs)
++            )
++        )
+ 
+         q.run()
+ 
+@@ -295,8 +293,11 @@ class SqlTable(QObject):
+             name: Name of the index, should be unique.
+             field: Name of the field to index.
+         """
+-        q = Query("CREATE INDEX IF NOT EXISTS {name} ON {table} ({field})"
+-                  .format(name=name, table=self._name, field=field))
++        q = Query(
++            "CREATE INDEX IF NOT EXISTS {name} ON {table} ({field})".format(
++                name=name, table=self._name, field=field
++            )
++        )
+         q.run()
+ 
+     def __iter__(self):
+@@ -312,8 +313,10 @@ class SqlTable(QObject):
+             field: Field to match.
+         """
+         return Query(
+-            "SELECT EXISTS(SELECT * FROM {table} WHERE {field} = :val)"
+-            .format(table=self._name, field=field))
++            "SELECT EXISTS(SELECT * FROM {table} WHERE {field} = :val)".format(
++                table=self._name, field=field
++            )
++        )
+ 
+     def __len__(self):
+         """Return the count of rows in the table."""
+@@ -331,19 +334,24 @@ class SqlTable(QObject):
+         Return:
+             The number of rows deleted.
+         """
+-        q = Query("DELETE FROM {table} where {field} = :val"
+-                  .format(table=self._name, field=field))
++        q = Query(
++            "DELETE FROM {table} where {field} = :val".format(
++                table=self._name, field=field
++            )
++        )
+         q.run(val=value)
+         if not q.rows_affected():
+             raise KeyError('No row with {} = "{}"'.format(field, value))
+         self.changed.emit()
+ 
+     def _insert_query(self, values, replace):
+-        params = ', '.join(':{}'.format(key) for key in values)
++        params = ", ".join(":{}".format(key) for key in values)
+         verb = "REPLACE" if replace else "INSERT"
+-        return Query("{verb} INTO {table} ({columns}) values({params})".format(
+-            verb=verb, table=self._name, columns=', '.join(values),
+-            params=params))
++        return Query(
++            "{verb} INTO {table} ({columns}) values({params})".format(
++                verb=verb, table=self._name, columns=", ".join(values), params=params
++            )
++        )
+ 
+     def insert(self, values, replace=False):
+         """Append a row to the table.
+@@ -382,9 +390,11 @@ class SqlTable(QObject):
+ 
+         Return: A prepared and executed select query.
+         """
+-        q = Query("SELECT * FROM {table} ORDER BY {sort_by} {sort_order} "
+-                  "LIMIT :limit"
+-                  .format(table=self._name, sort_by=sort_by,
+-                          sort_order=sort_order))
++        q = Query(
++            "SELECT * FROM {table} ORDER BY {sort_by} {sort_order} "
++            "LIMIT :limit".format(
++                table=self._name, sort_by=sort_by, sort_order=sort_order
++            )
++        )
+         q.run(limit=limit)
+         return q
+diff --git a/requirements.txt b/requirements.txt
+index 4a26b99ac..d12b44df5 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -7,4 +7,5 @@ Jinja2==2.10.1
+ MarkupSafe==1.1.1
+ Pygments==2.4.0
+ pyPEG2==2.15.2
+-PyYAML==5.1
++PyYAML==3.13
++pypinyin==0.30.0
+diff --git a/tests/unit/browser/test_history.py b/tests/unit/browser/test_history.py
+index 297fd4c2d..389e75306 100644
+--- a/tests/unit/browser/test_history.py
++++ b/tests/unit/browser/test_history.py
+@@ -34,98 +34,99 @@ from qutebrowser.misc import sql
+ def prerequisites(config_stub, fake_save_manager, init_sql, fake_args):
+     """Make sure everything is ready to initialize a WebHistory."""
+     fake_args.debug_flags = []
+-    config_stub.data = {'general': {'private-browsing': False}}
++    config_stub.data = {"general": {"private-browsing": False}}
+ 
+ 
+ class TestSpecialMethods:
+-
+     def test_iter(self, web_history):
+-        urlstr = 'http://www.example.com/'
++        urlstr = "http://www.example.com/"
+         url = QUrl(urlstr)
+         web_history.add_url(url, atime=12345)
+ 
+-        assert list(web_history) == [(urlstr, '', 12345, False)]
++        assert list(web_history) == [(urlstr, "", 12345, False)]
+ 
+     def test_len(self, web_history):
+         assert len(web_history) == 0
+ 
+-        url = QUrl('http://www.example.com/')
++        url = QUrl("http://www.example.com/")
+         web_history.add_url(url)
+ 
+         assert len(web_history) == 1
+ 
+     def test_contains(self, web_history):
+-        web_history.add_url(QUrl('http://www.example.com/'),
+-                            title='Title', atime=12345)
+-        assert 'http://www.example.com/' in web_history
+-        assert 'www.example.com' not in web_history
+-        assert 'Title' not in web_history
++        web_history.add_url(QUrl("http://www.example.com/"), title="Title", atime=12345)
++        assert "http://www.example.com/" in web_history
++        assert "www.example.com" not in web_history
++        assert "Title" not in web_history
+         assert 12345 not in web_history
+ 
+ 
+ class TestGetting:
+-
+     def test_get_recent(self, web_history):
+-        web_history.add_url(QUrl('http://www.qutebrowser.org/'), atime=67890)
+-        web_history.add_url(QUrl('http://example.com/'), atime=12345)
++        web_history.add_url(QUrl("http://www.qutebrowser.org/"), atime=67890)
++        web_history.add_url(QUrl("http://example.com/"), atime=12345)
+         assert list(web_history.get_recent()) == [
+-            ('http://www.qutebrowser.org/', '', 67890, False),
+-            ('http://example.com/', '', 12345, False),
++            ("http://www.qutebrowser.org/", "", 67890, False),
++            ("http://example.com/", "", 12345, False),
+         ]
+ 
+     def test_entries_between(self, web_history):
+-        web_history.add_url(QUrl('http://www.example.com/1'), atime=12345)
+-        web_history.add_url(QUrl('http://www.example.com/2'), atime=12346)
+-        web_history.add_url(QUrl('http://www.example.com/3'), atime=12347)
+-        web_history.add_url(QUrl('http://www.example.com/4'), atime=12348)
+-        web_history.add_url(QUrl('http://www.example.com/5'), atime=12348)
+-        web_history.add_url(QUrl('http://www.example.com/6'), atime=12349)
+-        web_history.add_url(QUrl('http://www.example.com/7'), atime=12350)
++        web_history.add_url(QUrl("http://www.example.com/1"), atime=12345)
++        web_history.add_url(QUrl("http://www.example.com/2"), atime=12346)
++        web_history.add_url(QUrl("http://www.example.com/3"), atime=12347)
++        web_history.add_url(QUrl("http://www.example.com/4"), atime=12348)
++        web_history.add_url(QUrl("http://www.example.com/5"), atime=12348)
++        web_history.add_url(QUrl("http://www.example.com/6"), atime=12349)
++        web_history.add_url(QUrl("http://www.example.com/7"), atime=12350)
+ 
+         times = [x.atime for x in web_history.entries_between(12346, 12349)]
+         assert times == [12349, 12348, 12348, 12347]
+ 
+     def test_entries_before(self, web_history):
+-        web_history.add_url(QUrl('http://www.example.com/1'), atime=12346)
+-        web_history.add_url(QUrl('http://www.example.com/2'), atime=12346)
+-        web_history.add_url(QUrl('http://www.example.com/3'), atime=12347)
+-        web_history.add_url(QUrl('http://www.example.com/4'), atime=12348)
+-        web_history.add_url(QUrl('http://www.example.com/5'), atime=12348)
+-        web_history.add_url(QUrl('http://www.example.com/6'), atime=12348)
+-        web_history.add_url(QUrl('http://www.example.com/7'), atime=12349)
+-        web_history.add_url(QUrl('http://www.example.com/8'), atime=12349)
+-
+-        times = [x.atime for x in
+-                 web_history.entries_before(12348, limit=3, offset=2)]
++        web_history.add_url(QUrl("http://www.example.com/1"), atime=12346)
++        web_history.add_url(QUrl("http://www.example.com/2"), atime=12346)
++        web_history.add_url(QUrl("http://www.example.com/3"), atime=12347)
++        web_history.add_url(QUrl("http://www.example.com/4"), atime=12348)
++        web_history.add_url(QUrl("http://www.example.com/5"), atime=12348)
++        web_history.add_url(QUrl("http://www.example.com/6"), atime=12348)
++        web_history.add_url(QUrl("http://www.example.com/7"), atime=12349)
++        web_history.add_url(QUrl("http://www.example.com/8"), atime=12349)
++
++        times = [x.atime for x in web_history.entries_before(12348, limit=3, offset=2)]
+         assert times == [12348, 12347, 12346]
+ 
+ 
+ class TestDelete:
+-
+     def test_clear(self, qtbot, tmpdir, web_history, mocker):
+-        web_history.add_url(QUrl('http://example.com/'))
+-        web_history.add_url(QUrl('http://www.qutebrowser.org/'))
+-
+-        m = mocker.patch('qutebrowser.browser.history.message.confirm_async',
+-                         new=mocker.Mock, spec=[])
++        web_history.add_url(QUrl("http://example.com/"))
++        web_history.add_url(QUrl("http://www.qutebrowser.org/"))
++
++        m = mocker.patch(
++            "qutebrowser.browser.history.message.confirm_async",
++            new=mocker.Mock,
++            spec=[],
++        )
+         web_history.clear()
+         assert m.called
+ 
+     def test_clear_force(self, qtbot, tmpdir, web_history):
+-        web_history.add_url(QUrl('http://example.com/'))
+-        web_history.add_url(QUrl('http://www.qutebrowser.org/'))
++        web_history.add_url(QUrl("http://example.com/"))
++        web_history.add_url(QUrl("http://www.qutebrowser.org/"))
+         web_history.clear(force=True)
+         assert not len(web_history)
+         assert not len(web_history.completion)
+ 
+-    @pytest.mark.parametrize('raw, escaped', [
+-        ('http://example.com/1', 'http://example.com/1'),
+-        ('http://example.com/1 2', 'http://example.com/1%202'),
+-    ])
++    @pytest.mark.parametrize(
++        "raw, escaped",
++        [
++            ("http://example.com/1", "http://example.com/1"),
++            ("http://example.com/1 2", "http://example.com/1%202"),
++        ],
++    )
+     def test_delete_url(self, web_history, raw, escaped):
+-        web_history.add_url(QUrl('http://example.com/'), atime=0)
++        web_history.add_url(QUrl("http://example.com/"), atime=0)
+         web_history.add_url(QUrl(escaped), atime=0)
+-        web_history.add_url(QUrl('http://example.com/2'), atime=0)
++        web_history.add_url(QUrl("http://example.com/2"), atime=0)
+ 
+         before = set(web_history)
+         completion_before = set(web_history.completion)
+@@ -133,37 +134,68 @@ class TestDelete:
+         web_history.delete_url(QUrl(raw))
+ 
+         diff = before.difference(set(web_history))
+-        assert diff == {(escaped, '', 0, False)}
++        assert diff == {(escaped, "", 0, False)}
+ 
+-        completion_diff = completion_before.difference(
+-            set(web_history.completion))
+-        assert completion_diff == {(raw, '', 0)}
++        completion_diff = completion_before.difference(set(web_history.completion))
++        assert completion_diff == {(raw, "", 0)}
+ 
+ 
+ class TestAdd:
+-
+     @pytest.fixture()
+     def mock_time(self, mocker):
+-        m = mocker.patch('qutebrowser.browser.history.time')
++        m = mocker.patch("qutebrowser.browser.history.time")
+         m.time.return_value = 12345
+         return 12345
+ 
+     @pytest.mark.parametrize(
+-        'url, atime, title, redirect, history_url, completion_url', [
+-            ('http://www.example.com', 12346, 'the title', False,
+-             'http://www.example.com', 'http://www.example.com'),
+-            ('http://www.example.com', 12346, 'the title', True,
+-             'http://www.example.com', None),
+-            ('http://www.example.com/sp ce', 12346, 'the title', False,
+-             'http://www.example.com/sp%20ce', 'http://www.example.com/sp ce'),
+-            ('https://user:pass@example.com', 12346, 'the title', False,
+-             'https://user@example.com', 'https://user@example.com'),
+-        ]
++        "url, atime, title, redirect, history_url, completion_url",
++        [
++            (
++                "http://www.example.com",
++                12346,
++                "the title",
++                False,
++                "http://www.example.com",
++                "http://www.example.com",
++            ),
++            (
++                "http://www.example.com",
++                12346,
++                "the title",
++                True,
++                "http://www.example.com",
++                None,
++            ),
++            (
++                "http://www.example.com/sp ce",
++                12346,
++                "the title",
++                False,
++                "http://www.example.com/sp%20ce",
++                "http://www.example.com/sp ce",
++            ),
++            (
++                "https://user:pass@example.com",
++                12346,
++                "the title",
++                False,
++                "https://user@example.com",
++                "https://user@example.com",
++            ),
++        ],
+     )
+-    def test_add_url(self, qtbot, web_history,
+-                     url, atime, title, redirect, history_url, completion_url):
+-        web_history.add_url(QUrl(url), atime=atime, title=title,
+-                            redirect=redirect)
++    def test_add_url(
++        self,
++        qtbot,
++        web_history,
++        url,
++        atime,
++        title,
++        redirect,
++        history_url,
++        completion_url,
++    ):
++        web_history.add_url(QUrl(url), atime=atime, title=title, redirect=redirect)
+         assert list(web_history) == [(history_url, title, atime, redirect)]
+         if completion_url is None:
+             assert not len(web_history.completion)
+@@ -172,9 +204,13 @@ class TestAdd:
+             assert list(web_history.completion) == expected
+ 
+     def test_no_sql_web_history(self, web_history, fake_args):
+-        fake_args.debug_flags = 'no-sql-history'
+-        web_history.add_url(QUrl('https://www.example.com/'), atime=12346,
+-                            title='Hello World', redirect=False)
++        fake_args.debug_flags = "no-sql-history"
++        web_history.add_url(
++            QUrl("https://www.example.com/"),
++            atime=12346,
++            title="Hello World",
++            redirect=False,
++        )
+         assert not list(web_history)
+ 
+     def test_invalid(self, qtbot, web_history, caplog):
+@@ -183,95 +219,103 @@ class TestAdd:
+         assert not list(web_history)
+         assert not list(web_history.completion)
+ 
+-    @pytest.mark.parametrize('known_error', [True, False])
+-    @pytest.mark.parametrize('completion', [True, False])
+-    def test_error(self, monkeypatch, web_history, message_mock, caplog,
+-                   known_error, completion):
++    @pytest.mark.parametrize("known_error", [True, False])
++    @pytest.mark.parametrize("completion", [True, False])
++    def test_error(
++        self, monkeypatch, web_history, message_mock, caplog, known_error, completion
++    ):
+         def raise_error(url, replace=False):
+-            if known_error:
+-                raise sql.KnownError("Error message")
+-            raise sql.BugError("Error message")
++            if environmental:
++                raise sql.SqlKnownError("Error message")
++            raise sql.SqlBugError("Error message")
+ 
+         if completion:
+-            monkeypatch.setattr(web_history.completion, 'insert', raise_error)
++            monkeypatch.setattr(web_history.completion, "insert", raise_error)
+         else:
+-            monkeypatch.setattr(web_history, 'insert', raise_error)
++            monkeypatch.setattr(web_history, "insert", raise_error)
+ 
+         if known_error:
+             with caplog.at_level(logging.ERROR):
+-                web_history.add_url(QUrl('https://www.example.org/'))
++                web_history.add_url(QUrl("https://www.example.org/"))
+             msg = message_mock.getmsg(usertypes.MessageLevel.error)
+             assert msg.text == "Failed to write history: Error message"
+         else:
+             with pytest.raises(sql.BugError):
+-                web_history.add_url(QUrl('https://www.example.org/'))
+-
+-    @pytest.mark.parametrize('level, url, req_url, expected', [
+-        (logging.DEBUG, 'a.com', 'a.com', [('a.com', 'title', 12345, False)]),
+-        (logging.DEBUG, 'a.com', 'b.com', [('a.com', 'title', 12345, False),
+-                                           ('b.com', 'title', 12345, True)]),
+-        (logging.WARNING, 'a.com', '', [('a.com', 'title', 12345, False)]),
+-        (logging.WARNING, '', '', []),
+-        (logging.WARNING, 'data:foo', '', []),
+-        (logging.WARNING, 'a.com', 'data:foo', []),
+-    ])
+-    def test_from_tab(self, web_history, caplog, mock_time,
+-                      level, url, req_url, expected):
++                web_history.add_url(QUrl("https://www.example.org/"))
++
++    @pytest.mark.parametrize(
++        "level, url, req_url, expected",
++        [
++            (logging.DEBUG, "a.com", "a.com", [("a.com", "title", 12345, False)]),
++            (
++                logging.DEBUG,
++                "a.com",
++                "b.com",
++                [("a.com", "title", 12345, False), ("b.com", "title", 12345, True)],
++            ),
++            (logging.WARNING, "a.com", "", [("a.com", "title", 12345, False)]),
++            (logging.WARNING, "", "", []),
++            (logging.WARNING, "data:foo", "", []),
++            (logging.WARNING, "a.com", "data:foo", []),
++        ],
++    )
++    def test_from_tab(
++        self, web_history, caplog, mock_time, level, url, req_url, expected
++    ):
+         with caplog.at_level(level):
+-            web_history.add_from_tab(QUrl(url), QUrl(req_url), 'title')
++            web_history.add_from_tab(QUrl(url), QUrl(req_url), "title")
+         assert set(web_history) == set(expected)
+ 
+     def test_exclude(self, web_history, config_stub):
+         """Excluded URLs should be in the history but not completion."""
+-        config_stub.val.completion.web_history.exclude = ['*.example.org']
+-        url = QUrl('http://www.example.org/')
+-        web_history.add_from_tab(url, url, 'title')
++        config_stub.val.completion.web_history.exclude = ["*.example.org"]
++        url = QUrl("http://www.example.org/")
++        web_history.add_from_tab(url, url, "title")
+         assert list(web_history)
+         assert not list(web_history.completion)
+ 
+     def test_no_immedate_duplicates(self, web_history, mock_time):
+         url = QUrl("http://example.com")
+         url2 = QUrl("http://example2.com")
+-        web_history.add_from_tab(QUrl(url), QUrl(url), 'title')
++        web_history.add_from_tab(QUrl(url), QUrl(url), "title")
+         hist = list(web_history)
+         assert hist
+-        web_history.add_from_tab(QUrl(url), QUrl(url), 'title')
++        web_history.add_from_tab(QUrl(url), QUrl(url), "title")
+         assert list(web_history) == hist
+-        web_history.add_from_tab(QUrl(url2), QUrl(url2), 'title')
++        web_history.add_from_tab(QUrl(url2), QUrl(url2), "title")
+         assert list(web_history) != hist
+ 
+     def test_delete_add_tab(self, web_history, mock_time):
+         url = QUrl("http://example.com")
+-        web_history.add_from_tab(QUrl(url), QUrl(url), 'title')
++        web_history.add_from_tab(QUrl(url), QUrl(url), "title")
+         hist = list(web_history)
+         assert hist
+         web_history.delete_url(QUrl(url))
+         assert len(web_history) == 0
+-        web_history.add_from_tab(QUrl(url), QUrl(url), 'title')
++        web_history.add_from_tab(QUrl(url), QUrl(url), "title")
+         assert list(web_history) == hist
+ 
+     def test_clear_add_tab(self, web_history, mock_time):
+         url = QUrl("http://example.com")
+-        web_history.add_from_tab(QUrl(url), QUrl(url), 'title')
++        web_history.add_from_tab(QUrl(url), QUrl(url), "title")
+         hist = list(web_history)
+         assert hist
+         web_history.clear(force=True)
+         assert len(web_history) == 0
+-        web_history.add_from_tab(QUrl(url), QUrl(url), 'title')
++        web_history.add_from_tab(QUrl(url), QUrl(url), "title")
+         assert list(web_history) == hist
+ 
+ 
+ class TestHistoryInterface:
+-
+     @pytest.fixture
+     def hist_interface(self, web_history):
+         # pylint: disable=invalid-name
+-        QtWebKit = pytest.importorskip('PyQt5.QtWebKit')
++        QtWebKit = pytest.importorskip("PyQt5.QtWebKit")
+         from qutebrowser.browser.webkit import webkithistory
++
+         QWebHistoryInterface = QtWebKit.QWebHistoryInterface
+         # pylint: enable=invalid-name
+-        web_history.add_url(url=QUrl('http://www.example.com/'),
+-                            title='example')
++        web_history.add_url(url=QUrl("http://www.example.com/"), title="example")
+         interface = webkithistory.WebHistoryInterface(web_history)
+         QWebHistoryInterface.setDefaultInterface(interface)
+         yield
+@@ -279,38 +323,39 @@ class TestHistoryInterface:
+ 
+     def test_history_interface(self, qtbot, webview, hist_interface):
+         html = b"<a href='about:blank'>foo</a>"
+-        url = urlutils.data_url('text/html', html)
++        url = urlutils.data_url("text/html", html)
+         with qtbot.waitSignal(webview.loadFinished):
+             webview.load(url)
+ 
+ 
+ class TestInit:
+-
+     @pytest.fixture
+     def cleanup_init(self):
+         # prevent test_init from leaking state
+         yield
+-        web_history = objreg.get('web-history', None)
++        web_history = objreg.get("web-history", None)
+         if web_history is not None:
+             web_history.setParent(None)
+-            objreg.delete('web-history')
++            objreg.delete("web-history")
+         try:
+             from PyQt5.QtWebKit import QWebHistoryInterface
++
+             QWebHistoryInterface.setDefaultInterface(None)
+         except ImportError:
+             pass
+ 
+-    @pytest.mark.parametrize('backend', [usertypes.Backend.QtWebEngine,
+-                                         usertypes.Backend.QtWebKit])
++    @pytest.mark.parametrize(
++        "backend", [usertypes.Backend.QtWebEngine, usertypes.Backend.QtWebKit]
++    )
+     def test_init(self, backend, qapp, tmpdir, monkeypatch, cleanup_init):
+         if backend == usertypes.Backend.QtWebKit:
+-            pytest.importorskip('PyQt5.QtWebKitWidgets')
++            pytest.importorskip("PyQt5.QtWebKitWidgets")
+         else:
+             assert backend == usertypes.Backend.QtWebEngine
+ 
+-        monkeypatch.setattr(history.objects, 'backend', backend)
++        monkeypatch.setattr(history.objects, "backend", backend)
+         history.init(qapp)
+-        hist = objreg.get('web-history')
++        hist = objreg.get("web-history")
+         assert hist.parent() is qapp
+ 
+         try:
+@@ -334,123 +379,134 @@ class TestInit:
+ 
+ 
+ class TestDump:
+-
+     def test_debug_dump_history(self, web_history, tmpdir):
+-        web_history.add_url(QUrl('http://example.com/1'),
+-                            title="Title1", atime=12345)
+-        web_history.add_url(QUrl('http://example.com/2'),
+-                            title="Title2", atime=12346)
+-        web_history.add_url(QUrl('http://example.com/3'),
+-                            title="Title3", atime=12347)
+-        web_history.add_url(QUrl('http://example.com/4'),
+-                            title="Title4", atime=12348, redirect=True)
+-        histfile = tmpdir / 'history'
++        web_history.add_url(QUrl("http://example.com/1"), title="Title1", atime=12345)
++        web_history.add_url(QUrl("http://example.com/2"), title="Title2", atime=12346)
++        web_history.add_url(QUrl("http://example.com/3"), title="Title3", atime=12347)
++        web_history.add_url(
++            QUrl("http://example.com/4"), title="Title4", atime=12348, redirect=True
++        )
++        histfile = tmpdir / "history"
+         web_history.debug_dump_history(str(histfile))
+-        expected = ['12345 http://example.com/1 Title1',
+-                    '12346 http://example.com/2 Title2',
+-                    '12347 http://example.com/3 Title3',
+-                    '12348-r http://example.com/4 Title4']
+-        assert histfile.read() == '\n'.join(expected)
++        expected = [
++            "12345 http://example.com/1 Title1",
++            "12346 http://example.com/2 Title2",
++            "12347 http://example.com/3 Title3",
++            "12348-r http://example.com/4 Title4",
++        ]
++        assert histfile.read() == "\n".join(expected)
+ 
+     def test_nonexistent(self, web_history, tmpdir):
+-        histfile = tmpdir / 'nonexistent' / 'history'
++        histfile = tmpdir / "nonexistent" / "history"
+         with pytest.raises(cmdutils.CommandError):
+             web_history.debug_dump_history(str(histfile))
+ 
+ 
+ class TestRebuild:
+-
+     def test_delete(self, web_history, stubs):
+-        web_history.insert({'url': 'example.com/1', 'title': 'example1',
+-                            'redirect': False, 'atime': 1})
+-        web_history.insert({'url': 'example.com/1', 'title': 'example1',
+-                            'redirect': False, 'atime': 2})
+-        web_history.insert({'url': 'example.com/2%203', 'title': 'example2',
+-                            'redirect': False, 'atime': 3})
+-        web_history.insert({'url': 'example.com/3', 'title': 'example3',
+-                            'redirect': True, 'atime': 4})
+-        web_history.insert({'url': 'example.com/2 3', 'title': 'example2',
+-                            'redirect': False, 'atime': 5})
++        web_history.insert(
++            {"url": "example.com/1", "title": "example1", "redirect": False, "atime": 1}
++        )
++        web_history.insert(
++            {"url": "example.com/1", "title": "example1", "redirect": False, "atime": 2}
++        )
++        web_history.insert(
++            {
++                "url": "example.com/2%203",
++                "title": "example2",
++                "redirect": False,
++                "atime": 3,
++            }
++        )
++        web_history.insert(
++            {"url": "example.com/3", "title": "example3", "redirect": True, "atime": 4}
++        )
++        web_history.insert(
++            {
++                "url": "example.com/2 3",
++                "title": "example2",
++                "redirect": False,
++                "atime": 5,
++            }
++        )
+         web_history.completion.delete_all()
+ 
+         hist2 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+         assert list(hist2.completion) == [
+-            ('example.com/1', 'example1', 2),
+-            ('example.com/2 3', 'example2', 5),
++            ("example.com/1", "example1", 2),
++            ("example.com/2 3", "example2", 5),
+         ]
+ 
+     def test_no_rebuild(self, web_history, stubs):
+         """Ensure that completion is not regenerated unless empty."""
+-        web_history.add_url(QUrl('example.com/1'), redirect=False, atime=1)
+-        web_history.add_url(QUrl('example.com/2'), redirect=False, atime=2)
+-        web_history.completion.delete('url', 'example.com/2')
++        web_history.add_url(QUrl("example.com/1"), redirect=False, atime=1)
++        web_history.add_url(QUrl("example.com/2"), redirect=False, atime=2)
++        web_history.completion.delete("url", "example.com/2")
+ 
+         hist2 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+-        assert list(hist2.completion) == [('example.com/1', '', 1)]
++        assert list(hist2.completion) == [("example.com/1", "", 1)]
+ 
+     def test_user_version(self, web_history, stubs, monkeypatch):
+         """Ensure that completion is regenerated if user_version changes."""
+-        web_history.add_url(QUrl('example.com/1'), redirect=False, atime=1)
+-        web_history.add_url(QUrl('example.com/2'), redirect=False, atime=2)
+-        web_history.completion.delete('url', 'example.com/2')
++        web_history.add_url(QUrl("example.com/1"), redirect=False, atime=1)
++        web_history.add_url(QUrl("example.com/2"), redirect=False, atime=2)
++        web_history.completion.delete("url", "example.com/2")
+ 
+         hist2 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+-        assert list(hist2.completion) == [('example.com/1', '', 1)]
++        assert list(hist2.completion) == [("example.com/1", "", 1)]
+ 
+-        monkeypatch.setattr(history, '_USER_VERSION',
+-                            history._USER_VERSION + 1)
++        monkeypatch.setattr(history, "_USER_VERSION", history._USER_VERSION + 1)
+         hist3 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+         assert list(hist3.completion) == [
+-            ('example.com/1', '', 1),
+-            ('example.com/2', '', 2),
++            ("example.com/1", "", 1),
++            ("example.com/2", "", 2),
+         ]
+ 
+     def test_force_rebuild(self, web_history, stubs):
+         """Ensure that completion is regenerated if we force a rebuild."""
+-        web_history.add_url(QUrl('example.com/1'), redirect=False, atime=1)
+-        web_history.add_url(QUrl('example.com/2'), redirect=False, atime=2)
+-        web_history.completion.delete('url', 'example.com/2')
++        web_history.add_url(QUrl("example.com/1"), redirect=False, atime=1)
++        web_history.add_url(QUrl("example.com/2"), redirect=False, atime=2)
++        web_history.completion.delete("url", "example.com/2")
+ 
+         hist2 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+-        assert list(hist2.completion) == [('example.com/1', '', 1)]
+-        hist2.metainfo['force_rebuild'] = True
++        assert list(hist2.completion) == [("example.com/1", "", 1)]
++        hist2.metainfo["force_rebuild"] = True
+ 
+         hist3 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+         assert list(hist3.completion) == [
+-            ('example.com/1', '', 1),
+-            ('example.com/2', '', 2),
++            ("example.com/1", "", 1),
++            ("example.com/2", "", 2),
+         ]
+-        assert not hist3.metainfo['force_rebuild']
++        assert not hist3.metainfo["force_rebuild"]
+ 
+     def test_exclude(self, config_stub, web_history, stubs):
+         """Ensure that patterns in completion.web_history.exclude are ignored.
+ 
+         This setting should only be used for the completion.
+         """
+-        config_stub.val.completion.web_history.exclude = ['*.example.org']
+-        assert web_history.metainfo['force_rebuild']
++        config_stub.val.completion.web_history.exclude = ["*.example.org"]
++        assert web_history.metainfo["force_rebuild"]
+ 
+-        web_history.add_url(QUrl('http://example.com'),
+-                            redirect=False, atime=1)
+-        web_history.add_url(QUrl('http://example.org'),
+-                            redirect=False, atime=2)
++        web_history.add_url(QUrl("http://example.com"), redirect=False, atime=1)
++        web_history.add_url(QUrl("http://example.org"), redirect=False, atime=2)
+ 
+         hist2 = history.WebHistory(progress=stubs.FakeHistoryProgress())
+-        assert list(hist2.completion) == [('http://example.com', '', 1)]
++        assert list(hist2.completion) == [("http://example.com", "", 1)]
+ 
+     def test_unrelated_config_change(self, config_stub, web_history):
+         config_stub.val.history_gap_interval = 1234
+-        assert not web_history.metainfo['force_rebuild']
++        assert not web_history.metainfo["force_rebuild"]
+ 
+-    @pytest.mark.parametrize('patch_threshold', [True, False])
+-    def test_progress(self, web_history, config_stub, monkeypatch, stubs,
+-                      patch_threshold):
+-        web_history.add_url(QUrl('example.com/1'), redirect=False, atime=1)
+-        web_history.add_url(QUrl('example.com/2'), redirect=False, atime=2)
+-        web_history.metainfo['force_rebuild'] = True
++    @pytest.mark.parametrize("patch_threshold", [True, False])
++    def test_progress(
++        self, web_history, config_stub, monkeypatch, stubs, patch_threshold
++    ):
++        web_history.add_url(QUrl("example.com/1"), redirect=False, atime=1)
++        web_history.add_url(QUrl("example.com/2"), redirect=False, atime=2)
++        web_history.metainfo["force_rebuild"] = True
+ 
+         if patch_threshold:
+-            monkeypatch.setattr(history.WebHistory, '_PROGRESS_THRESHOLD', 1)
++            monkeypatch.setattr(history.WebHistory, "_PROGRESS_THRESHOLD", 1)
+ 
+         progress = stubs.FakeHistoryProgress()
+         history.WebHistory(progress=progress)
+@@ -460,34 +516,32 @@ class TestRebuild:
+ 
+ 
+ class TestCompletionMetaInfo:
+-
+     @pytest.fixture
+     def metainfo(self):
+         return history.CompletionMetaInfo()
+ 
+     def test_contains_keyerror(self, metainfo):
+         with pytest.raises(KeyError):
+-            'does_not_exist' in metainfo  # pylint: disable=pointless-statement
++            "does_not_exist" in metainfo  # pylint: disable=pointless-statement
+ 
+     def test_getitem_keyerror(self, metainfo):
+         with pytest.raises(KeyError):
+-            metainfo['does_not_exist']  # pylint: disable=pointless-statement
++            metainfo["does_not_exist"]  # pylint: disable=pointless-statement
+ 
+     def test_setitem_keyerror(self, metainfo):
+         with pytest.raises(KeyError):
+-            metainfo['does_not_exist'] = 42
++            metainfo["does_not_exist"] = 42
+ 
+     def test_contains(self, metainfo):
+-        assert 'force_rebuild' in metainfo
++        assert "force_rebuild" in metainfo
+ 
+     def test_modify(self, metainfo):
+-        assert not metainfo['force_rebuild']
+-        metainfo['force_rebuild'] = True
+-        assert metainfo['force_rebuild']
++        assert not metainfo["force_rebuild"]
++        metainfo["force_rebuild"] = True
++        assert metainfo["force_rebuild"]
+ 
+ 
+ class TestHistoryProgress:
+-
+     @pytest.fixture
+     def progress(self):
+         return history.HistoryProgress()
+diff --git a/tests/unit/completion/test_histcategory.py b/tests/unit/completion/test_histcategory.py
+index b724667df..a98a84dfe 100644
+--- a/tests/unit/completion/test_histcategory.py
++++ b/tests/unit/completion/test_histcategory.py
+@@ -31,72 +31,67 @@ from qutebrowser.utils import usertypes
+ 
+ @pytest.fixture
+ def hist(init_sql, config_stub):
+-    config_stub.val.completion.timestamp_format = '%Y-%m-%d'
++    config_stub.val.completion.timestamp_format = "%Y-%m-%d"
+     config_stub.val.completion.web_history.max_items = -1
+-    return sql.SqlTable('CompletionHistory', ['url', 'title', 'last_atime'])
+-
+-
+-@pytest.mark.parametrize('pattern, before, after', [
+-    ('foo',
+-     [('foo', ''), ('bar', ''), ('aafobbb', '')],
+-     [('foo',)]),
+-
+-    ('FOO',
+-     [('foo', ''), ('bar', ''), ('aafobbb', '')],
+-     [('foo',)]),
+-
+-    ('foo',
+-     [('FOO', ''), ('BAR', ''), ('AAFOBBB', '')],
+-     [('FOO',)]),
+-
+-    ('foo',
+-     [('baz', 'bar'), ('foo', ''), ('bar', 'foo')],
+-     [('foo', ''), ('bar', 'foo')]),
+-
+-    ('foo',
+-     [('fooa', ''), ('foob', ''), ('fooc', '')],
+-     [('fooa', ''), ('foob', ''), ('fooc', '')]),
+-
+-    ('foo',
+-     [('foo', 'bar'), ('bar', 'foo'), ('biz', 'baz')],
+-     [('foo', 'bar'), ('bar', 'foo')]),
+-
+-    ('foo bar',
+-     [('foo', ''), ('bar foo', ''), ('xfooyybarz', '')],
+-     [('bar foo', ''), ('xfooyybarz', '')]),
+-
+-    ('foo%bar',
+-     [('foo%bar', ''), ('foo bar', ''), ('foobar', '')],
+-     [('foo%bar', '')]),
+-
+-    ('_',
+-     [('a_b', ''), ('__a', ''), ('abc', '')],
+-     [('a_b', ''), ('__a', '')]),
+-
+-    ('%',
+-     [('\\foo', '\\bar')],
+-     []),
+-
+-    ("can't",
+-     [("can't touch this", ''), ('a', '')],
+-     [("can't touch this", '')]),
+-
+-    ("ample itle",
+-     [('example.com', 'title'), ('example.com', 'nope')],
+-     [('example.com', 'title')]),
+-
+-    # https://github.com/qutebrowser/qutebrowser/issues/4411
+-    ("mlfreq",
+-     [('https://qutebrowser.org/FAQ.html', 'Frequently Asked Questions')],
+-     []),
+-    ("ml freq",
+-     [('https://qutebrowser.org/FAQ.html', 'Frequently Asked Questions')],
+-     [('https://qutebrowser.org/FAQ.html', 'Frequently Asked Questions')]),
+-])
++    return sql.SqlTable("CompletionHistory", ["url", "title", "last_atime"])
++
++
++@pytest.mark.parametrize(
++    "pattern, before, after",
++    [
++        ("foo", [("foo", ""), ("bar", ""), ("aafobbb", "")], [("foo",)]),
++        ("FOO", [("foo", ""), ("bar", ""), ("aafobbb", "")], [("foo",)]),
++        ("foo", [("FOO", ""), ("BAR", ""), ("AAFOBBB", "")], [("FOO",)]),
++        (
++            "foo",
++            [("baz", "bar"), ("foo", ""), ("bar", "foo")],
++            [("foo", ""), ("bar", "foo")],
++        ),
++        (
++            "foo",
++            [("fooa", ""), ("foob", ""), ("fooc", "")],
++            [("fooa", ""), ("foob", ""), ("fooc", "")],
++        ),
++        (
++            "foo",
++            [("foo", "bar"), ("bar", "foo"), ("biz", "baz")],
++            [("foo", "bar"), ("bar", "foo")],
++        ),
++        (
++            "foo bar",
++            [("foo", ""), ("bar foo", ""), ("xfooyybarz", "")],
++            [("bar foo", ""), ("xfooyybarz", "")],
++        ),
++        (
++            "foo%bar",
++            [("foo%bar", ""), ("foo bar", ""), ("foobar", "")],
++            [("foo%bar", "")],
++        ),
++        ("_", [("a_b", ""), ("__a", ""), ("abc", "")], [("a_b", ""), ("__a", "")]),
++        ("%", [("\\foo", "\\bar")], []),
++        ("can't", [("can't touch this", ""), ("a", "")], [("can't touch this", "")]),
++        (
++            "ample itle",
++            [("example.com", "title"), ("example.com", "nope")],
++            [("example.com", "title")],
++        ),
++        # https://github.com/qutebrowser/qutebrowser/issues/4411
++        (
++            "mlfreq",
++            [("https://qutebrowser.org/FAQ.html", "Frequently Asked Questions")],
++            [],
++        ),
++        (
++            "ml freq",
++            [("https://qutebrowser.org/FAQ.html", "Frequently Asked Questions")],
++            [("https://qutebrowser.org/FAQ.html", "Frequently Asked Questions")],
++        ),
++    ],
++)
+ def test_set_pattern(pattern, before, after, model_validator, hist):
+     """Validate the filtering and sorting results of set_pattern."""
+     for row in before:
+-        hist.insert({'url': row[0], 'title': row[1], 'last_atime': 1})
++        hist.insert({"url": row[0], "title": row[1], "last_atime": 1})
+     cat = histcategory.HistoryCategory()
+     model_validator.set_model(cat)
+     cat.set_pattern(pattern)
+@@ -105,139 +100,153 @@ def test_set_pattern(pattern, before, after, model_validator, hist):
+ 
+ def test_set_pattern_repeated(model_validator, hist):
+     """Validate multiple subsequent calls to set_pattern."""
+-    hist.insert({'url': 'example.com/foo', 'title': 'title1', 'last_atime': 1})
+-    hist.insert({'url': 'example.com/bar', 'title': 'title2', 'last_atime': 1})
+-    hist.insert({'url': 'example.com/baz', 'title': 'title3', 'last_atime': 1})
++    hist.insert({"url": "example.com/foo", "title": "title1", "last_atime": 1})
++    hist.insert({"url": "example.com/bar", "title": "title2", "last_atime": 1})
++    hist.insert({"url": "example.com/baz", "title": "title3", "last_atime": 1})
+     cat = histcategory.HistoryCategory()
+     model_validator.set_model(cat)
+ 
+-    cat.set_pattern('b')
+-    model_validator.validate([
+-        ('example.com/bar', 'title2'),
+-        ('example.com/baz', 'title3'),
+-    ])
++    cat.set_pattern("b")
++    model_validator.validate(
++        [("example.com/bar", "title2"), ("example.com/baz", "title3")]
++    )
+ 
+-    cat.set_pattern('ba')
+-    model_validator.validate([
+-        ('example.com/bar', 'title2'),
+-        ('example.com/baz', 'title3'),
+-    ])
++    cat.set_pattern("ba")
++    model_validator.validate(
++        [("example.com/bar", "title2"), ("example.com/baz", "title3")]
++    )
+ 
+-    cat.set_pattern('ba ')
+-    model_validator.validate([
+-        ('example.com/bar', 'title2'),
+-        ('example.com/baz', 'title3'),
+-    ])
++    cat.set_pattern("ba ")
++    model_validator.validate(
++        [("example.com/bar", "title2"), ("example.com/baz", "title3")]
++    )
+ 
+-    cat.set_pattern('ba z')
+-    model_validator.validate([
+-        ('example.com/baz', 'title3'),
+-    ])
++    cat.set_pattern("ba z")
++    model_validator.validate([("example.com/baz", "title3")])
+ 
+ 
+ def test_set_pattern_long(hist, message_mock, caplog):
+-    hist.insert({'url': 'example.com/foo', 'title': 'title1', 'last_atime': 1})
++    hist.insert({"url": "example.com/foo", "title": "title1", "last_atime": 1})
+     cat = histcategory.HistoryCategory()
+     with caplog.at_level(logging.ERROR):
++        # pylint: disable=bad-builtin
+         cat.set_pattern(" ".join(map(str, range(10000))))
++        # pylint: enable=bad-builtin
+     msg = message_mock.getmsg(usertypes.MessageLevel.error)
+-    assert msg.text.startswith("Error with SQL query:")
+-
+-
+-@pytest.mark.parametrize('max_items, before, after', [
+-    (-1, [
+-        ('a', 'a', '2017-04-16'),
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-    ], [
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-        ('a', 'a', '2017-04-16'),
+-    ]),
+-    (3, [
+-        ('a', 'a', '2017-04-16'),
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-    ], [
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-        ('a', 'a', '2017-04-16'),
+-    ]),
+-    (2 ** 63 - 1, [  # Maximum value sqlite can handle for LIMIT
+-        ('a', 'a', '2017-04-16'),
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-    ], [
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-        ('a', 'a', '2017-04-16'),
+-    ]),
+-    (2, [
+-        ('a', 'a', '2017-04-16'),
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-    ], [
+-        ('b', 'b', '2017-06-16'),
+-        ('c', 'c', '2017-05-16'),
+-    ]),
+-    (1, [], []),  # issue 2849 (crash with empty history)
+-])
++    assert msg.text.startswith("Error with SQL Query: Expression tree is too large")
++
++
++@pytest.mark.parametrize(
++    "max_items, before, after",
++    [
++        (
++            -1,
++            [
++                ("a", "a", "2017-04-16"),
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++            ],
++            [
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++                ("a", "a", "2017-04-16"),
++            ],
++        ),
++        (
++            3,
++            [
++                ("a", "a", "2017-04-16"),
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++            ],
++            [
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++                ("a", "a", "2017-04-16"),
++            ],
++        ),
++        (
++            2 ** 63 - 1,
++            [  # Maximum value sqlite can handle for LIMIT
++                ("a", "a", "2017-04-16"),
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++            ],
++            [
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++                ("a", "a", "2017-04-16"),
++            ],
++        ),
++        (
++            2,
++            [
++                ("a", "a", "2017-04-16"),
++                ("b", "b", "2017-06-16"),
++                ("c", "c", "2017-05-16"),
++            ],
++            [("b", "b", "2017-06-16"), ("c", "c", "2017-05-16")],
++        ),
++        (1, [], []),  # issue 2849 (crash with empty history)
++    ],
++)
+ def test_sorting(max_items, before, after, model_validator, hist, config_stub):
+     """Validate the filtering and sorting results of set_pattern."""
+     config_stub.val.completion.web_history.max_items = max_items
+     for url, title, atime in before:
+-        timestamp = datetime.datetime.strptime(atime, '%Y-%m-%d').timestamp()
+-        hist.insert({'url': url, 'title': title, 'last_atime': timestamp})
++        timestamp = datetime.datetime.strptime(atime, "%Y-%m-%d").timestamp()
++        hist.insert({"url": url, "title": title, "last_atime": timestamp})
+     cat = histcategory.HistoryCategory()
+     model_validator.set_model(cat)
+-    cat.set_pattern('')
++    cat.set_pattern("")
+     model_validator.validate(after)
+ 
+ 
+ def test_remove_rows(hist, model_validator):
+-    hist.insert({'url': 'foo', 'title': 'Foo', 'last_atime': 0})
+-    hist.insert({'url': 'bar', 'title': 'Bar', 'last_atime': 0})
++    hist.insert({"url": "foo", "title": "Foo", "last_atime": 0})
++    hist.insert({"url": "bar", "title": "Bar", "last_atime": 0})
+     cat = histcategory.HistoryCategory()
+     model_validator.set_model(cat)
+-    cat.set_pattern('')
+-    hist.delete('url', 'foo')
++    cat.set_pattern("")
++    hist.delete("url", "foo")
+     cat.removeRows(0, 1)
+-    model_validator.validate([('bar', 'Bar')])
++    model_validator.validate([("bar", "Bar")])
+ 
+ 
+ def test_remove_rows_fetch(hist):
+     """removeRows should fetch enough data to make the current index valid."""
+     # we cannot use model_validator as it will fetch everything up front
+-    hist.insert_batch({
+-        'url': [str(i) for i in range(300)],
+-        'title': [str(i) for i in range(300)],
+-        'last_atime': [0] * 300,
+-    })
++    hist.insert_batch(
++        {
++            "url": [str(i) for i in range(300)],
++            "title": [str(i) for i in range(300)],
++            "last_atime": [0] * 300,
++        }
++    )
+     cat = histcategory.HistoryCategory()
+-    cat.set_pattern('')
++    cat.set_pattern("")
+ 
+     # sanity check that we didn't fetch everything up front
+     assert cat.rowCount() < 300
+     cat.fetchMore()
+     assert cat.rowCount() == 300
+ 
+-    hist.delete('url', '298')
++    hist.delete("url", "298")
+     cat.removeRows(297, 1)
+     assert cat.rowCount() == 299
+ 
+ 
+-@pytest.mark.parametrize('fmt, expected', [
+-    ('%Y-%m-%d', '2018-02-27'),
+-    ('%m/%d/%Y %H:%M', '02/27/2018 08:30'),
+-    ('', ''),
+-])
++@pytest.mark.parametrize(
++    "fmt, expected",
++    [("%Y-%m-%d", "2018-02-27"), ("%m/%d/%Y %H:%M", "02/27/2018 08:30"), ("", "")],
++)
+ def test_timestamp_fmt(fmt, expected, model_validator, config_stub, init_sql):
+     """Validate the filtering and sorting results of set_pattern."""
+     config_stub.val.completion.timestamp_format = fmt
+-    hist = sql.SqlTable('CompletionHistory', ['url', 'title', 'last_atime'])
++    hist = sql.SqlTable("CompletionHistory", ["url", "title", "last_atime"])
+     atime = datetime.datetime(2018, 2, 27, 8, 30)
+-    hist.insert({'url': 'foo', 'title': '', 'last_atime': atime.timestamp()})
++    hist.insert({"url": "foo", "title": "", "last_atime": atime.timestamp()})
+     cat = histcategory.HistoryCategory()
+     model_validator.set_model(cat)
+-    cat.set_pattern('')
+-    model_validator.validate([('foo', '', expected)])
++    cat.set_pattern("")
++    model_validator.validate([("foo", "", expected)])
+diff --git a/tests/unit/misc/test_sql.py b/tests/unit/misc/test_sql.py
+index f354ea279..ee48661fe 100644
+--- a/tests/unit/misc/test_sql.py
++++ b/tests/unit/misc/test_sql.py
+@@ -26,10 +26,10 @@ from PyQt5.QtSql import QSqlError
+ from qutebrowser.misc import sql
+ 
+ 
+-pytestmark = pytest.mark.usefixtures('init_sql')
++pytestmark = pytest.mark.usefixtures("init_sql")
+ 
+ 
+-@pytest.mark.parametrize('klass', [sql.KnownError, sql.BugError])
++@pytest.mark.parametrize("klass", [sql.SqlKnownError, sql.SqlBugError])
+ def test_sqlerror(klass):
+     text = "Hello World"
+     err = klass(text)
+@@ -38,14 +38,17 @@ def test_sqlerror(klass):
+ 
+ 
+ class TestSqlError:
+-
+-    @pytest.mark.parametrize('error_code, exception', [
+-        (sql.SqliteErrorCode.BUSY, sql.KnownError),
+-        (sql.SqliteErrorCode.CONSTRAINT, sql.BugError),
+-    ])
++    @pytest.mark.parametrize(
++        "error_code, exception",
++        [
++            (sql.SqliteErrorCode.BUSY, sql.SqlKnownError),
++            (sql.SqliteErrorCode.CONSTRAINT, sql.SqlBugError),
++        ],
++    )
+     def test_known(self, error_code, exception):
+-        sql_err = QSqlError("driver text", "db text", QSqlError.UnknownError,
+-                            error_code)
++        sql_err = QSqlError(
++            "driver text", "db text", QSqlError.UnknownError, error_code
++        )
+         with pytest.raises(exception):
+             sql.raise_sqlite_error("Message", sql_err)
+ 
+@@ -55,28 +58,31 @@ class TestSqlError:
+         Due to https://bugreports.qt.io/browse/QTBUG-70506 we get an error with
+         "out of memory" as string and -1 as error code.
+         """
+-        sql_err = QSqlError("Error opening database",
+-                            "out of memory",
+-                            QSqlError.UnknownError,
+-                            sql.SqliteErrorCode.UNKNOWN)
+-        with pytest.raises(sql.KnownError):
++        sql_err = QSqlError(
++            "Error opening database",
++            "out of memory",
++            QSqlError.UnknownError,
++            sql.SqliteErrorCode.UNKNOWN,
++        )
++        with pytest.raises(sql.SqlKnownError):
+             sql.raise_sqlite_error("Message", sql_err)
+ 
+     def test_logging(self, caplog):
+-        sql_err = QSqlError("driver text", "db text", QSqlError.UnknownError,
+-                            '23')
++        sql_err = QSqlError("driver text", "db text", QSqlError.UnknownError, "23")
+         with pytest.raises(sql.BugError):
+             sql.raise_sqlite_error("Message", sql_err)
+ 
+-        expected = ['SQL error:',
+-                    'type: UnknownError',
+-                    'database text: db text',
+-                    'driver text: driver text',
+-                    'error code: 23']
++        expected = [
++            "SQL error:",
++            "type: UnknownError",
++            "database text: db text",
++            "driver text: driver text",
++            "error code: 23",
++        ]
+ 
+         assert caplog.messages == expected
+ 
+-    @pytest.mark.parametrize('klass', [sql.KnownError, sql.BugError])
++    @pytest.mark.parametrize("klass", [sql.SqlKnownError, sql.SqlBugError])
+     def test_text(self, klass):
+         sql_err = QSqlError("driver text", "db text")
+         err = klass("Message", sql_err)
+@@ -84,149 +90,188 @@ class TestSqlError:
+ 
+ 
+ def test_init():
+-    sql.SqlTable('Foo', ['name', 'val', 'lucky'])
++    sql.SqlTable("Foo", ["name", "val", "lucky"])
+     # should not error if table already exists
+-    sql.SqlTable('Foo', ['name', 'val', 'lucky'])
++    sql.SqlTable("Foo", ["name", "val", "lucky"])
+ 
+ 
+ def test_insert(qtbot):
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
+     with qtbot.waitSignal(table.changed):
+-        table.insert({'name': 'one', 'val': 1, 'lucky': False})
++        table.insert({"name": "one", "val": 1, "lucky": False})
+     with qtbot.waitSignal(table.changed):
+-        table.insert({'name': 'wan', 'val': 1, 'lucky': False})
++        table.insert({"name": "wan", "val": 1, "lucky": False})
+ 
+ 
+ def test_insert_replace(qtbot):
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'],
+-                         constraints={'name': 'PRIMARY KEY'})
++    table = sql.SqlTable(
++        "Foo", ["name", "val", "lucky"], constraints={"name": "PRIMARY KEY"}
++    )
+     with qtbot.waitSignal(table.changed):
+-        table.insert({'name': 'one', 'val': 1, 'lucky': False}, replace=True)
++        table.insert({"name": "one", "val": 1, "lucky": False}, replace=True)
+     with qtbot.waitSignal(table.changed):
+-        table.insert({'name': 'one', 'val': 11, 'lucky': True}, replace=True)
+-    assert list(table) == [('one', 11, True)]
++        table.insert({"name": "one", "val": 11, "lucky": True}, replace=True)
++    assert list(table) == [("one", 11, True)]
+ 
+     with pytest.raises(sql.BugError):
+-        table.insert({'name': 'one', 'val': 11, 'lucky': True}, replace=False)
++        table.insert({"name": "one", "val": 11, "lucky": True}, replace=False)
+ 
+ 
+ def test_insert_batch(qtbot):
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
+ 
+     with qtbot.waitSignal(table.changed):
+-        table.insert_batch({'name': ['one', 'nine', 'thirteen'],
+-                            'val': [1, 9, 13],
+-                            'lucky': [False, False, True]})
++        table.insert_batch(
++            {
++                "name": ["one", "nine", "thirteen"],
++                "val": [1, 9, 13],
++                "lucky": [False, False, True],
++            }
++        )
+ 
+-    assert list(table) == [('one', 1, False),
+-                           ('nine', 9, False),
+-                           ('thirteen', 13, True)]
++    assert list(table) == [
++        ("one", 1, False),
++        ("nine", 9, False),
++        ("thirteen", 13, True),
++    ]
+ 
+ 
+ def test_insert_batch_replace(qtbot):
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'],
+-                         constraints={'name': 'PRIMARY KEY'})
++    table = sql.SqlTable(
++        "Foo", ["name", "val", "lucky"], constraints={"name": "PRIMARY KEY"}
++    )
+ 
+     with qtbot.waitSignal(table.changed):
+-        table.insert_batch({'name': ['one', 'nine', 'thirteen'],
+-                            'val': [1, 9, 13],
+-                            'lucky': [False, False, True]})
++        table.insert_batch(
++            {
++                "name": ["one", "nine", "thirteen"],
++                "val": [1, 9, 13],
++                "lucky": [False, False, True],
++            }
++        )
+ 
+     with qtbot.waitSignal(table.changed):
+-        table.insert_batch({'name': ['one', 'nine'],
+-                            'val': [11, 19],
+-                            'lucky': [True, True]},
+-                           replace=True)
++        table.insert_batch(
++            {"name": ["one", "nine"], "val": [11, 19], "lucky": [True, True]},
++            replace=True,
++        )
+ 
+-    assert list(table) == [('thirteen', 13, True),
+-                           ('one', 11, True),
+-                           ('nine', 19, True)]
++    assert list(table) == [
++        ("thirteen", 13, True),
++        ("one", 11, True),
++        ("nine", 19, True),
++    ]
+ 
+     with pytest.raises(sql.BugError):
+-        table.insert_batch({'name': ['one', 'nine'],
+-                            'val': [11, 19],
+-                            'lucky': [True, True]})
++        table.insert_batch(
++            {"name": ["one", "nine"], "val": [11, 19], "lucky": [True, True]}
++        )
+ 
+ 
+ def test_iter():
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
+-    table.insert({'name': 'one', 'val': 1, 'lucky': False})
+-    table.insert({'name': 'nine', 'val': 9, 'lucky': False})
+-    table.insert({'name': 'thirteen', 'val': 13, 'lucky': True})
+-    assert list(table) == [('one', 1, False),
+-                           ('nine', 9, False),
+-                           ('thirteen', 13, True)]
+-
+-
+-@pytest.mark.parametrize('rows, sort_by, sort_order, limit, result', [
+-    ([{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}], 'a', 'asc', 5,
+-     [(1, 6), (2, 5), (3, 4)]),
+-    ([{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}], 'a', 'desc', 3,
+-     [(3, 4), (2, 5), (1, 6)]),
+-    ([{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}], 'b', 'desc', 2,
+-     [(1, 6), (2, 5)]),
+-    ([{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}], 'a', 'asc', -1,
+-     [(1, 6), (2, 5), (3, 4)]),
+-])
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
++    table.insert({"name": "one", "val": 1, "lucky": False})
++    table.insert({"name": "nine", "val": 9, "lucky": False})
++    table.insert({"name": "thirteen", "val": 13, "lucky": True})
++    assert list(table) == [
++        ("one", 1, False),
++        ("nine", 9, False),
++        ("thirteen", 13, True),
++    ]
++
++
++@pytest.mark.parametrize(
++    "rows, sort_by, sort_order, limit, result",
++    [
++        (
++            [{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}],
++            "a",
++            "asc",
++            5,
++            [(1, 6), (2, 5), (3, 4)],
++        ),
++        (
++            [{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}],
++            "a",
++            "desc",
++            3,
++            [(3, 4), (2, 5), (1, 6)],
++        ),
++        (
++            [{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}],
++            "b",
++            "desc",
++            2,
++            [(1, 6), (2, 5)],
++        ),
++        (
++            [{"a": 2, "b": 5}, {"a": 1, "b": 6}, {"a": 3, "b": 4}],
++            "a",
++            "asc",
++            -1,
++            [(1, 6), (2, 5), (3, 4)],
++        ),
++    ],
++)
+ def test_select(rows, sort_by, sort_order, limit, result):
+-    table = sql.SqlTable('Foo', ['a', 'b'])
++    table = sql.SqlTable("Foo", ["a", "b"])
+     for row in rows:
+         table.insert(row)
+     assert list(table.select(sort_by, sort_order, limit)) == result
+ 
+ 
+ def test_delete(qtbot):
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
+-    table.insert({'name': 'one', 'val': 1, 'lucky': False})
+-    table.insert({'name': 'nine', 'val': 9, 'lucky': False})
+-    table.insert({'name': 'thirteen', 'val': 13, 'lucky': True})
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
++    table.insert({"name": "one", "val": 1, "lucky": False})
++    table.insert({"name": "nine", "val": 9, "lucky": False})
++    table.insert({"name": "thirteen", "val": 13, "lucky": True})
+     with pytest.raises(KeyError):
+-        table.delete('name', 'nope')
++        table.delete("name", "nope")
+     with qtbot.waitSignal(table.changed):
+-        table.delete('name', 'thirteen')
+-    assert list(table) == [('one', 1, False), ('nine', 9, False)]
++        table.delete("name", "thirteen")
++    assert list(table) == [("one", 1, False), ("nine", 9, False)]
+     with qtbot.waitSignal(table.changed):
+-        table.delete('lucky', False)
++        table.delete("lucky", False)
+     assert not list(table)
+ 
+ 
+ def test_len():
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
+     assert len(table) == 0
+-    table.insert({'name': 'one', 'val': 1, 'lucky': False})
++    table.insert({"name": "one", "val": 1, "lucky": False})
+     assert len(table) == 1
+-    table.insert({'name': 'nine', 'val': 9, 'lucky': False})
++    table.insert({"name": "nine", "val": 9, "lucky": False})
+     assert len(table) == 2
+-    table.insert({'name': 'thirteen', 'val': 13, 'lucky': True})
++    table.insert({"name": "thirteen", "val": 13, "lucky": True})
+     assert len(table) == 3
+ 
+ 
+ def test_contains():
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
+-    table.insert({'name': 'one', 'val': 1, 'lucky': False})
+-    table.insert({'name': 'nine', 'val': 9, 'lucky': False})
+-    table.insert({'name': 'thirteen', 'val': 13, 'lucky': True})
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
++    table.insert({"name": "one", "val": 1, "lucky": False})
++    table.insert({"name": "nine", "val": 9, "lucky": False})
++    table.insert({"name": "thirteen", "val": 13, "lucky": True})
+ 
+-    name_query = table.contains_query('name')
+-    val_query = table.contains_query('val')
+-    lucky_query = table.contains_query('lucky')
++    name_query = table.contains_query("name")
++    val_query = table.contains_query("val")
++    lucky_query = table.contains_query("lucky")
+ 
+-    assert name_query.run(val='one').value()
+-    assert name_query.run(val='thirteen').value()
++    assert name_query.run(val="one").value()
++    assert name_query.run(val="thirteen").value()
+     assert val_query.run(val=9).value()
+     assert lucky_query.run(val=False).value()
+     assert lucky_query.run(val=True).value()
+-    assert not name_query.run(val='oone').value()
++    assert not name_query.run(val="oone").value()
+     assert not name_query.run(val=1).value()
+-    assert not name_query.run(val='*').value()
++    assert not name_query.run(val="*").value()
+     assert not val_query.run(val=10).value()
+ 
+ 
+ def test_delete_all(qtbot):
+-    table = sql.SqlTable('Foo', ['name', 'val', 'lucky'])
+-    table.insert({'name': 'one', 'val': 1, 'lucky': False})
+-    table.insert({'name': 'nine', 'val': 9, 'lucky': False})
+-    table.insert({'name': 'thirteen', 'val': 13, 'lucky': True})
++    table = sql.SqlTable("Foo", ["name", "val", "lucky"])
++    table.insert({"name": "one", "val": 1, "lucky": False})
++    table.insert({"name": "nine", "val": 9, "lucky": False})
++    table.insert({"name": "thirteen", "val": 13, "lucky": True})
+     with qtbot.waitSignal(table.changed):
+         table.delete_all()
+     assert list(table) == []
+@@ -237,77 +282,76 @@ def test_version():
+ 
+ 
+ class TestSqlQuery:
+-
+     def test_prepare_error(self):
+         with pytest.raises(sql.BugError) as excinfo:
+-            sql.Query('invalid')
++            sql.Query("invalid")
+ 
+-        expected = ('Failed to prepare query "invalid": "near "invalid": '
+-                    'syntax error Unable to execute statement"')
++        expected = (
++            'Failed to prepare query "invalid": "near "invalid": '
++            'syntax error Unable to execute statement"'
++        )
+         assert str(excinfo.value) == expected
+ 
+-    @pytest.mark.parametrize('forward_only', [True, False])
++    @pytest.mark.parametrize("forward_only", [True, False])
+     def test_forward_only(self, forward_only):
+-        q = sql.Query('SELECT 0 WHERE 0', forward_only=forward_only)
++        q = sql.Query("SELECT 0 WHERE 0", forward_only=forward_only)
+         assert q.query.isForwardOnly() == forward_only
+ 
+     def test_iter_inactive(self):
+-        q = sql.Query('SELECT 0')
+-        with pytest.raises(sql.BugError,
+-                           match='Cannot iterate inactive query'):
++        q = sql.Query("SELECT 0")
++        with pytest.raises(sql.BugError, match="Cannot iterate inactive query"):
+             next(iter(q))
+ 
+     def test_iter_empty(self):
+-        q = sql.Query('SELECT 0 AS col WHERE 0')
++        q = sql.Query("SELECT 0 AS col WHERE 0")
+         q.run()
+         with pytest.raises(StopIteration):
+             next(iter(q))
+ 
+     def test_iter(self):
+-        q = sql.Query('SELECT 0 AS col')
++        q = sql.Query("SELECT 0 AS col")
+         q.run()
+         result = next(iter(q))
+         assert result.col == 0
+ 
+     def test_iter_multiple(self):
+-        q = sql.Query('VALUES (1), (2), (3);')
++        q = sql.Query("VALUES (1), (2), (3);")
+         res = list(q.run())
+         assert len(res) == 3
+         assert res[0].column1 == 1
+ 
+     def test_run_binding(self):
+-        q = sql.Query('SELECT :answer')
++        q = sql.Query("SELECT :answer")
+         q.run(answer=42)
+         assert q.value() == 42
+ 
+     def test_run_missing_binding(self):
+-        q = sql.Query('SELECT :answer')
+-        with pytest.raises(sql.BugError, match='Missing bound values!'):
++        q = sql.Query("SELECT :answer")
++        with pytest.raises(sql.BugError, match="Missing bound values!"):
+             q.run()
+ 
+     def test_run_batch(self):
+-        q = sql.Query('SELECT :answer')
+-        q.run_batch(values={'answer': [42]})
++        q = sql.Query("SELECT :answer")
++        q.run_batch(values={"answer": [42]})
+         assert q.value() == 42
+ 
+     def test_run_batch_missing_binding(self):
+-        q = sql.Query('SELECT :answer')
+-        with pytest.raises(sql.BugError, match='Missing bound values!'):
++        q = sql.Query("SELECT :answer")
++        with pytest.raises(sql.BugError, match="Missing bound values!"):
+             q.run_batch(values={})
+ 
+     def test_value_missing(self):
+-        q = sql.Query('SELECT 0 WHERE 0')
++        q = sql.Query("SELECT 0 WHERE 0")
+         q.run()
+-        with pytest.raises(sql.BugError,
+-                           match='No result for single-result query'):
++        with pytest.raises(sql.BugError, match="No result for single-result query"):
+             q.value()
+ 
+     def test_num_rows_affected(self):
+-        q = sql.Query('SELECT 0')
++        q = sql.Query("SELECT 0")
+         q.run()
+         assert q.rows_affected() == 0
+ 
+     def test_bound_values(self):
+-        q = sql.Query('SELECT :answer')
++        q = sql.Query("SELECT :answer")
+         q.run(answer=42)
+-        assert q.bound_values() == {':answer': 42}
++        assert q.bound_values() == {":answer": 42}
