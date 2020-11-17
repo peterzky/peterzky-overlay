@@ -39,7 +39,7 @@ self: super: {
 
   ueberzug = super.callPackage ../packages/python/ueberzug { };
 
-  ranger-git = super.callPackage ../packages/ranger.nix { };
+  ranger-sixel = super.callPackage ../packages/ranger-sixel.nix { };
 
   my-latex = super.texlive.combine {
     inherit (super.texlive)
