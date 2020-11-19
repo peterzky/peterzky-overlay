@@ -16,12 +16,16 @@ self: super: {
 
   # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
 
-  # wofi dmenu replacement for wayland
+  wlroots-river = super.callPackage ../packages/wlroots { };
+
   zig-git = super.callPackage ../packages/zig-git {
     llvmPackages = super.llvmPackages_11;
   };
 
-  river = super.callPackage ../packages/river { zig = self.zig-git; };
+  river = super.callPackage ../packages/river {
+    zig = self.zig-git;
+    wlroots = self.wlroots-river;
+  };
 
   wofi = super.callPackage ../packages/wofi.nix { };
 
