@@ -17,6 +17,12 @@ self: super: {
   # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
 
   # wofi dmenu replacement for wayland
+  zig-git = super.callPackage ../packages/zig-git {
+    llvmPackages = super.llvmPackages_11;
+  };
+
+  river = super.callPackage ../packages/river { zig = self.zig-git; };
+
   wofi = super.callPackage ../packages/wofi.nix { };
 
   wofi-bluetooth = super.callPackage ../packages/wofi-bluetooth { };
@@ -77,6 +83,5 @@ self: super: {
       # date = 2019-07-09T17:53:15+08:00;
     };
   });
-
 
 }
