@@ -16,6 +16,8 @@ self: super: {
 
   # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
 
+  sws = super.callPackage ../packages/shellscript/sws { };
+
   interception-tools-plugins = super.interception-tools-plugins // {
     space2meta = super.callPackage ../packages/space2meta { };
   };
