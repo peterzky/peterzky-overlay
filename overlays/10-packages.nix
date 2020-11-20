@@ -15,7 +15,9 @@ self: super: {
   #   super.callPackage ../packages/fcitx5/fcitx5-chinese-addons.nix { };
 
   # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
-  space2meta = super.callPackage ../packages/space2meta { };
+  interception-tools-plugins = super.interception-tools-plugins // {
+    space2meta = super.callPackage ../packages/space2meta { };
+  }
 
   foot-git = super.callPackage ../packages/foot { };
 
