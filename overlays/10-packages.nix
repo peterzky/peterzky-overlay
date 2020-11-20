@@ -16,6 +16,8 @@ self: super: {
 
   # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
 
+  foot-git = super.callPackage ../packages/foot { };
+
   wlroots-river = super.callPackage ../packages/wlroots { };
 
   zig-git = super.callPackage ../packages/zig-git {
