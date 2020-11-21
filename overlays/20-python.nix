@@ -18,9 +18,9 @@ let
       # enableQt = true;
     };
 
-    i3-wk-switch = python-super.pkgs.callPackage ../packages/python/i3-wk-switch { };
+    i3-wk-switch = python-super.callPackage ../packages/python/i3-wk-switch { };
 
-    i3ipc = python-super.pkgs.callPackage ../packages/python/i3ipc { };
+    i3ipc = python-super.callPackage ../packages/python/i3ipc { };
 
   };
 
