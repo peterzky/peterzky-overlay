@@ -18,14 +18,13 @@ let
       # enableQt = true;
     };
 
-  };
-  packageOverrides37 = python-self: python-super: {
     i3-wk-switch = python-super.callPackage ../packages/python/i3-wk-switch { };
 
     i3ipc = python-super.callPackage ../packages/python/i3ipc { };
+
   };
+
 in {
   python3 = super.python3.override { inherit packageOverrides; };
   python36 = super.python36.override { inherit packageOverrides; };
-  python37 = super.python37.override { packageOverrides = packageOverrides37; };
 }

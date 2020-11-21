@@ -41,7 +41,7 @@ self: super: {
 
   my-tts = super.callPackage ../packages/go/tts { };
 
-  i3-wk-switch = super.python37Packages.i3-wk-switch;
+  i3-wk-switch = super.python3Packages.i3-wk-switch;
 
   my-timer = super.callPackage ../packages/go/timer { };
 
