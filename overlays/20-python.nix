@@ -22,6 +22,9 @@ let
 
     i3ipc = python-super.callPackage ../packages/python/i3ipc { };
 
+    mvnc = python-super.toPythonModule
+      (super.ncsdk.override { pythonPackages = python-super.pythonPackages; });
+
   };
 
 in {

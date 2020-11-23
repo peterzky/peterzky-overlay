@@ -15,6 +15,12 @@ self: super: {
   #   super.callPackage ../packages/fcitx5/fcitx5-chinese-addons.nix { };
 
   # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
+  ncsdk-fw = super.callPackage ../packages/ncsdk/ncsdk-fw.nix { };
+
+  ncsdk = super.callPackage ../packages/ncsdk/ncsdk.nix {
+    inherit ncsdk-fw;
+    pythonPackages = super.python3Packages;
+  };
 
   sws = super.callPackage ../packages/shellscript/sws { };
 
