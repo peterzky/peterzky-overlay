@@ -18,7 +18,7 @@ self: super: {
   ncsdk-fw = super.callPackage ../packages/ncsdk/ncsdk-fw.nix { };
 
   ncsdk = super.callPackage ../packages/ncsdk/ncsdk.nix {
-    inherit ncsdk-fw;
+    ncsdk-fw = self.ncsdk-fw;
     pythonPackages = super.python3Packages;
   };
 
