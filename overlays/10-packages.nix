@@ -73,8 +73,6 @@ self: super: {
 
   input-fonts = super.callPackage ../packages/input-font { };
 
-  dunst = super.dunst.override { dunstify = true; };
-
   # ibus enable wayland support
   ibus = super.ibus.override { withWayland = true; };
 
