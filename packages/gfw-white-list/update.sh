@@ -1,17 +1,18 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i bash -p curl jq
+
 # get current rev from nix file
-old_rev=$(sed -En 's/.*\brev = "(.*?)".*/\1/p' default.nix )
+old_rev=$(sed -En 's/.*\brev = "(.*?)".*/\1/p' default.nix)
 
 # get rev from github
 function fetch_head_rev {
-    curl "https://api.github.com/felixonmars/dnsmasq-china-list/commits?sha=master&per_page=1" |
+    curl "https://api.github.com/repos/felixonmars/dnsmasq-china-list/commits?sha=master&per_page=1" |
 	jq '.[0].sha' --raw-output
 }
 
 new_rev=$(fetch_head_rev)
 
-echo "Updating GFW-White-List"
+echo "Updating GFW-White-List" >&2
 echo "current revision: $old_rev" >&2
 echo "remote revision: $new_rev" >&2
 
@@ -28,3 +29,4 @@ if [[ $new_rev != $old_rev ]]; then
 	-e "s/\brev = \".*\"/rev = \"$new_rev\"/" \
 	-e "s/\bsha256 = \".*\"/sha256 = \"$hash\"/" \
 	default.nix
+fi

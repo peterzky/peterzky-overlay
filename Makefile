@@ -1,4 +1,4 @@
-UPDATE_DIRS = files packages/go/v2ray
+UPDATE_DIRS = files packages/go/v2ray packages/gfw-white-list
 
 .PHONY: update $(UPDATE_DIRS)
 
