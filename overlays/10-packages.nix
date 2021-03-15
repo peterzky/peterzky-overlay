@@ -53,7 +53,7 @@ self: super: {
 
   v2ray = super.callPackage ../packages/go/v2ray { };
 
-  gfw-white-list = super.callPackage ../packages/gfw-white-list.nix { };
+  gfw-white-list = super.callPackage ../packages/gfw-white-list { };
 
   san-francisco-font = super.callPackage ../packages/san-francisco-font.nix { };
 
