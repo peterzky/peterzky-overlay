@@ -12,8 +12,9 @@ python3Packages.buildPythonApplication rec {
   src = fetchFromGitHub {
     owner = "3ap";
     repo = "ranger";
-    rev = "70a0352d6247a388994051da0114aa998e93ce81";
-    sha256= "1irval1x4cqhw4s14k3yl0fsccxyz1dghsh9cd614d38abswwl6n";
+    rev = "c7dab8c8dba2ed54821f5b016475fa196f887d0f";
+    sha256= "19s4gbnm5dlgn4z91vdvz89z90ks2j3hgv18x9fh2yh6zin7nchl";
+    # date = 2020-08-01T12:19:50+02:00;
   };
 
   LC_ALL = "en_US.UTF-8";

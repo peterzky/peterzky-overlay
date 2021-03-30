@@ -1,20 +1,4 @@
 self: super: {
-
-  # fcitx5 = super.callPackage ../packages/fcitx5/fcitx5.nix { };
-
-  # libime = super.callPackage ../packages/fcitx5/libime.nix { };
-
-  # fcitx5-qt = super.libsForQt5.callPackage ../packages/fcitx5/fcitx5-qt.nix { };
-
-  # fcitx5-rime = super.callPackage ../packages/fcitx5/fcitx5-rime.nix { };
-
-  # fcitx5-kcm =
-  #   super.libsForQt5.callPackage ../packages/fcitx5/fcitx5-kcm.nix { };
-
-  # fcitx5-chinese-addons =
-  #   super.callPackage ../packages/fcitx5/fcitx5-chinese-addons.nix { };
-
-  # fcitx5-with-plugins = super.callPackage ../packages/fcitx5/wrapper.nix { };
   ncsdk-fw = super.callPackage ../packages/ncsdk/ncsdk-fw.nix { };
 
   ncsdk = super.callPackage ../packages/ncsdk/ncsdk.nix {
