@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitLab, cmake }:
+{ stdenv, lib, fetchFromGitLab, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "space2meta";
@@ -13,9 +13,10 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://gitlab.com/interception/linux/plugins/space2meta";
-    description = "Turn your space key into the meta key when chorded to another key.";
+    description =
+      "Turn your space key into the meta key when chorded to another key.";
     license = licenses.mit;
     platforms = platforms.linux;
   };

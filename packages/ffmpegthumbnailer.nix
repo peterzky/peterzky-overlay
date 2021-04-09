@@ -1,4 +1,4 @@
-{ fetchFromGitHub, stdenv, ffmpeg, cmake, libpng, pkgconfig, libjpeg }:
+{ fetchFromGitHub, stdenv, lib, ffmpeg, cmake, libpng, pkgconfig, libjpeg }:
 
 stdenv.mkDerivation rec {
   name = "ffmpegthumbnailer-${version}";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ ffmpeg libpng libjpeg ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://github.com/dirkvdb/ffmpegthumbnailer";
     description = "A lightweight video thumbnailer";
     longDescription = ''

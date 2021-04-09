@@ -1,4 +1,4 @@
-{ stdenv, buildPythonPackage, fetchFromGitHub, enum-compat, xorgserver, i3
+{ stdenv, lib, buildPythonPackage, fetchFromGitHub, enum-compat, xorgserver, i3
 , python, xlib, xdpyinfo, makeFontsConf, coreutils }:
 
 buildPythonPackage rec {
@@ -19,7 +19,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "An improved Python library to control i3wm and sway";
     homepage = "https://github.com/acrisci/i3ipc-python";
     license = licenses.bsd3;

@@ -1,4 +1,4 @@
-{ stdenv, unzip }:
+{ stdenv, lib, unzip }:
 
 stdenv.mkDerivation rec {
   name = "input-fonts-${version}";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     cp -a *.txt "$out"/share/doc/
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Fonts for Code, from Font Bureau";
     longDescription = ''
       Input is a font family designed for computer programming, data,

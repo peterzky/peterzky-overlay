@@ -1,4 +1,4 @@
-{ stdenv, buildPythonPackage, fetchPypi, isPyPy, olefile, freetype, libjpeg
+{ stdenv, lib, buildPythonPackage, fetchPypi, isPyPy, olefile, freetype, libjpeg
 , zlib, libtiff, libwebp, tcl, lcms2, tk, libX11, pytestrunner, pytest }:
 buildPythonPackage rec {
   pname = "Pillow-SIMD";
@@ -16,7 +16,7 @@ buildPythonPackage rec {
   checkInputs = [ pytest pytestrunner ];
 
   buildInputs = [ freetype libjpeg zlib libtiff libwebp tcl lcms2 ]
-    ++ stdenv.lib.optionals (isPyPy) [ tk libX11 ];
+    ++ lib.optionals (isPyPy) [ tk libX11 ];
 
   # NOTE: we use LCMS_ROOT as WEBP root since there is not other setting for webp.
   # NOTE: The Pillow install script will, by default, add paths like /usr/lib
@@ -43,13 +43,13 @@ buildPythonPackage rec {
       export CFLAGS="-I${libwebp}/include"
     ''
     # Remove impurities
-    + stdenv.lib.optionalString stdenv.isDarwin ''
+    + lib.optionalString stdenv.isDarwin ''
       substituteInPlace setup.py \
         --replace '"/Library/Frameworks",' "" \
         --replace '"/System/Library/Frameworks"' ""
     '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://python-pillow.github.io/";
     description = "Fork of The Python Imaging Library (PIL)";
     longDescription = ''

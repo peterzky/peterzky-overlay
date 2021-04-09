@@ -1,9 +1,6 @@
-{ stdenv, fetchFromGitHub, fetchpatch, meson, ninja, pkgconfig
-, wayland, libGL, wayland-protocols, libinput, libxkbcommon, pixman
-, xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, mesa_noglu
-, libglvnd
-, libpng, ffmpeg_4
-}:
+{ stdenv, lib, fetchFromGitHub, fetchpatch, meson, ninja, pkgconfig, wayland
+, libGL, wayland-protocols, libinput, libxkbcommon, pixman, xcbutilwm, libX11
+, libcap, xcbutilimage, xcbutilerrors, mesa_noglu, libglvnd, libpng, ffmpeg_4 }:
 
 let
   metadata = import ./metadata.nix;
@@ -26,15 +23,31 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ meson ninja pkgconfig ];
 
   buildInputs = [
-    wayland libGL wayland-protocols libinput libxkbcommon pixman
-    xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa_noglu
-    libpng ffmpeg_4
+    wayland
+    libGL
+    wayland-protocols
+    libinput
+    libxkbcommon
+    pixman
+    xcbutilwm
+    libX11
+    libcap
+    xcbutilimage
+    xcbutilerrors
+    mesa_noglu
+    libpng
+    ffmpeg_4
     libglvnd
   ];
 
   mesonFlags = [
-    "-Dlibcap=enabled" "-Dlogind-provider=systemd" "-Dxwayland=enabled" "-Dx11-backend=enabled"
-    "-Dxcb-icccm=enabled" "-Dxcb-xkb=enabled" "-Dxcb-errors=enabled"
+    "-Dlibcap=enabled"
+    "-Dlogind-provider=systemd"
+    "-Dxwayland=enabled"
+    "-Dx11-backend=enabled"
+    "-Dxcb-icccm=enabled"
+    "-Dxcb-xkb=enabled"
+    "-Dxcb-errors=enabled"
     "-Dlibseat=disabled"
   ];
 
@@ -50,11 +63,11 @@ in stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A modular Wayland compositor library";
     inherit (src.meta) homepage;
-    license     = licenses.mit;
-    platforms   = platforms.linux;
+    license = licenses.mit;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ primeos ];
   };
 }

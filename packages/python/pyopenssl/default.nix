@@ -1,7 +1,7 @@
-{ stdenv, buildPythonPackage, fetchPypi, openssl, cryptography, pyasn1, idna
-, pytest, pretend, flaky, glibcLocales }:
+{ stdenv, lib, buildPythonPackage, fetchPypi, openssl, cryptography, pyasn1
+, idna, pytest, pretend, flaky, glibcLocales }:
 
-with stdenv.lib;
+with lib;
 
 let
   # https://github.com/pyca/pyopenssl/issues/791

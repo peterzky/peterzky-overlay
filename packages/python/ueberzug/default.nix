@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, python3Packages, xorg }:
+{ stdenv, lib, fetchgit, python3Packages, xorg }:
 
 with python3Packages;
 let
@@ -25,7 +25,7 @@ in buildPythonPackage rec {
 
   propagatedBuildInputs = [ xlib_23 psutil pillow attrs docopt ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://github.com/seebye/ueberzug";
     description =
       "Command line util which allows to draw images on terminals by using child windows.";
