@@ -68,6 +68,16 @@ self: super: {
     };
   });
 
+  wayst-git = super.wayst.overrideAttrs (oldAttrs: rec {
+    src = super.fetchFromGitHub {
+      owner = "91861";
+      repo = "wayst";
+      rev = "e72ca78ef72c7b1e92473a98d435a3c85d7eab98";
+      # date = 2021-04-05T19:50:37+02:00;
+      sha256 = "112jajl34xl4i82bh9zal47jcqjmml6k6a0f985gz4v9ym4iaw2i";
+    };                           #
+  });
+
   ffmpegthumbnailer = super.callPackage ../packages/ffmpegthumbnailer.nix { };
 
   # feh enable auto reload

@@ -29,9 +29,9 @@ let
         src = fetchFromGitHub {
           owner = "jethrokuan";
           repo = "org-roam";
-          rev = "8ad57b121831eda8d226faa14ff2ba7ab652849c";
-          # date = 2021-03-08T12:57:38+08:00;
-          sha256 = "162qhb6rkpl1n0l8yhnwgagsx56ykaj9lchsny1id5z1257kgw9w";
+          rev = "2d586516999ddb32df773cc86e0bf2df19e64811";
+          # date = 2021-04-05T21:35:58+08:00;
+          sha256 = "0vwsfwlj5njw50r1i6nsncl6w0057v9ji3yi68lapp5vq6pmm5a4";
         };
 
         # current version of rx library not have anychar, use anything insdead.
