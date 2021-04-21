@@ -57,17 +57,6 @@ self: super: {
 
   input-fonts = super.callPackage ../packages/input-font { };
 
-  # ibus enable wayland support
-  ibus = super.ibus.override { withWayland = true; };
-
-  dragon-drop = super.dragon-drop.overrideAttrs (oldAttrs: rec {
-    src = super.fetchgit {
-      url = "https://github.com/mwh/dragon.git";
-      rev = "6d21f90e600bf5fd61b5a06cd09bb61b3f54ecbf";
-      sha256 = "1p5ixjdgb7vsnh7xq0vmbixx23h6l5332ip8hck8g5rd2rv11zhq";
-    };
-  });
-
   wayst-git = super.wayst.overrideAttrs (oldAttrs: rec {
     src = super.fetchFromGitHub {
       owner = "91861";
@@ -75,7 +64,7 @@ self: super: {
       rev = "e72ca78ef72c7b1e92473a98d435a3c85d7eab98";
       # date = 2021-04-05T19:50:37+02:00;
       sha256 = "112jajl34xl4i82bh9zal47jcqjmml6k6a0f985gz4v9ym4iaw2i";
-    };                           #
+    };
   });
 
   ffmpegthumbnailer = super.callPackage ../packages/ffmpegthumbnailer.nix { };
