@@ -1,12 +1,12 @@
 self: super: {
   lispPackages = super.lispPackages // {
     nyxt = super.lispPackages.nyxt.overrideAttrs (oldAttrs: rec {
+      meta.version = "2-pre-release-6";
       src = super.fetchFromGitHub {
         owner = "atlas-engineer";
         repo = "nyxt";
-        rev = "df34d8297505194831e1d09d4df5bd556eeaa0d0";
-        # date = 2021-04-21T15:44:13+02:00;
-        sha256 = "04r10alhsgs5iw7iw769rky4lyhi2igr8mivgah2wm0lja62x92v";
+        rev = "2-pre-release-6";
+        sha256 = "0kcqp3p070i6x2jj27h8pxzvmhrzsl4kl3vkc8m76abkxc9lvn03";
       };
     });
   };
