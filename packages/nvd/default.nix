@@ -9,20 +9,19 @@ stdenv.mkDerivation {
     # date = 2021-04-10T18:44:27-07:00;
     sha256 = "0z8m48hq27mx2gm9s7p5ii79wp5asabgc67q8s90y6jirfh1y1vm";
   };
-  sourceRoot = "./src";
 
   buildInputs = [ python3 ];
 
   buildPhase = ''
     runHook preBuild
-    gzip nvd.1
+    gzip src/nvd.1
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
-    install -m555 -Dt $out/bin nvd
-    install -m444 -Dt $out/share/man/man1 nvd.1.gz
+    install -m555 -Dt $out/bin src/nvd
+    install -m444 -Dt $out/share/man/man1 src/nvd.1.gz
     runHook postInstall
   '';
 

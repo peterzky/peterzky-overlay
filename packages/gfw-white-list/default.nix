@@ -3,8 +3,8 @@ stdenv.mkDerivation rec {
   name = "gfw-white-list";
   src = fetchgit {
     url = "http://github.com/felixonmars/dnsmasq-china-list.git";
-    rev = "585be8e77ed3097b9af8bc3ec33d19c55769a4bc";
-    sha256 = "0lf2ih8d4pwcxmniizfhx68m5jlyry55in560ppbvm3yph9h0amn";
+    rev = "540a3e59bc9201f8fb9296a21552ab429dc56e39";
+    sha256 = "06mzz4q15bms9w57sxh16c162d25k31i4alrmsk381gdy5z8rcab";
     # date = 2020-11-02T10:17:12+00:00;
   };
   buildPhase = ''
