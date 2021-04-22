@@ -6,6 +6,9 @@ self: super: {
     pythonPackages = super.python3Packages;
   };
 
+  # nix/nixos package version diff tool
+  nvd = super.callPackage ../packages/nvd { };
+
   sws = super.callPackage ../packages/shellscript/sws { };
 
   interception-tools-plugins = super.interception-tools-plugins // {
