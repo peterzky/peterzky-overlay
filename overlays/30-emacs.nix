@@ -1,43 +1,46 @@
 self: super:
 let
-  my-epkg-overrides = epkgs-self: epkgs-self:
+  my-epkg-overrides = epkgs:
     let
-      inherit (epkgs-self) emacs;
+      inherit (epkgs) emacs;
       inherit (super) stdenv fetchFromGitHub fetchgit;
       compileElisp = super.callPackage ./emacs/builder.nix;
     in {
       my-wiki = compileElisp {
         name = "my-wiki";
         src = ../packages/emacs/wiki;
-        buildInputs = with epkgs-self; [ ivy org counsel swiper dash ];
+        buildInputs = with epkgs; [ ivy org counsel swiper dash ];
       };
 
       my-anki = compileElisp {
         name = "my-anki";
         src = ../packages/emacs/my-anki;
-        buildInputs = with epkgs-self; [ org anki-editor dash request ];
+        buildInputs = with epkgs; [ org anki-editor dash request ];
       };
 
       my-speed-type = compileElisp {
         name = "my-speed-type";
         src = ../packages/emacs/speed-type;
-        buildInputs = with epkgs-self; [ evil org ];
+        buildInputs = with epkgs; [ evil org ];
       };
 
-      org-roam = compileElisp {
+      org-roam-v2 = compileElisp {
         name = "org-roam";
+        # nix-prefetch-git --branch-name v2 https://github.com/org-roam/org-roam.git
+        # src = ../../../playground/org-roam;
         src = fetchFromGitHub {
           owner = "jethrokuan";
           repo = "org-roam";
-          rev = "2d586516999ddb32df773cc86e0bf2df19e64811";
+          # branch = v2
+          rev = "1440802b8b05ecb78975f406b51e531cd831e313";
           # date = 2021-04-05T21:35:58+08:00;
-          sha256 = "0vwsfwlj5njw50r1i6nsncl6w0057v9ji3yi68lapp5vq6pmm5a4";
+          sha256 = "10jrnjq65lpg1x8d7lqc537yai9m6pdnfbzwr87fcyv6f8yii8xn";
         };
 
         # current version of rx library not have anychar, use anything insdead.
         # patches = [ ../patches/org-roam-rx-fix.patch ];
 
-        buildInputs = with epkgs-self; [ org dash s f company emacsql-sqlite3 ];
+        buildInputs = with epkgs; [ org dash s f company emacsql-sqlite3 ];
 
       };
 
@@ -71,7 +74,7 @@ let
           sha256 = "1b9410a6mvkqvarzfv1sbj9x6f6m8x7jh56gshndh1m4lhl2gf3p";
           # date = 2020-06-06T12:49:44+01:00;
         };
-        buildInputs = with epkgs-self; [ yasnippet ];
+        buildInputs = with epkgs; [ yasnippet ];
 
       }).overrideAttrs (oldAttrs: rec {
         installPhase = ''
