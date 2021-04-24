@@ -1,5 +1,5 @@
-{ stdenv, lib, emacs, name, src, buildInputs ? [ ], patches ? [ ], preBuild ? ""
-}:
+emacs:
+{ stdenv, lib, name, src, buildInputs ? [ ], patches ? [ ], preBuild ? "" }:
 
 stdenv.mkDerivation {
   inherit name src patches;

@@ -3,8 +3,10 @@ let
   my-epkg-overrides = epkgs:
     let
       inherit (epkgs) emacs;
-      inherit (super) stdenv fetchFromGitHub fetchgit;
-      compileElisp = super.callPackage ./emacs/builder.nix;
+      inherit (super) stdenv fetchFromGitHub fetchFromGitLab fetchgit;
+      # compile lisp code with same version of emacs
+      builder = import ./emacs/builder.nix super.emacsPgtkGcc;
+      compileElisp = super.callPackage builder;
     in {
       my-wiki = compileElisp {
         name = "my-wiki";
@@ -27,62 +29,79 @@ let
       org-roam-v2 = compileElisp {
         name = "org-roam";
         # nix-prefetch-git --branch-name v2 https://github.com/org-roam/org-roam.git
-        # src = ../../../playground/org-roam;
-        src = fetchFromGitHub {
-          owner = "jethrokuan";
-          repo = "org-roam";
-          # branch = v2
-          rev = "1440802b8b05ecb78975f406b51e531cd831e313";
-          # date = 2021-04-05T21:35:58+08:00;
-          sha256 = "10jrnjq65lpg1x8d7lqc537yai9m6pdnfbzwr87fcyv6f8yii8xn";
+        src = fetchgit {
+          url = "https://github.com/org-roam/org-roam.git";
+          branchName = "v2";
+          rev = "9da45b54f3ac69994de8f28a41dfefe3d786d875";
+          # date = 2021-04-16T13:02:48+08:00;
+          sha256 = "1k5jqmnrsgm9hwh060xi27k2klgi9vk1hyd7nhqm0vn2cvp3js2v";
         };
 
         # current version of rx library not have anychar, use anything insdead.
         # patches = [ ../patches/org-roam-rx-fix.patch ];
 
-        buildInputs = with epkgs; [ org dash s f company emacsql-sqlite3 ];
+        buildInputs = with epkgs; [
+          dash
+          emacsql
+          emacsql-sqlite3
+          f
+          org
+          s
+          magit-section
+        ];
 
       };
 
-      tridactyl-mode = compileElisp {
-        name = "tridactyl-mode";
-        src = fetchFromGitHub {
-          owner = "Fuco1";
-          repo = "tridactyl-mode";
-          rev = "0bbe8d94aef9faaf6d3a7e2955c1222fe96ea2e7";
-          sha256 = "0jd1mg2k4hsfg30fg484br9g8ml10y8n0cljxkx3g6qb20aqdnqf";
-          # date = 2018-09-23T00:18:10+02:00;
+      modus-themes = compileElisp {
+        name = "modus-themes";
+        src = fetchFromGitLab {
+          owner = "protesilaos";
+          repo = "modus-themes";
+          rev = "6122a90e037b73d617163c7c9ae1bfb1e0a47822";
+          # date = 2020-11-14T09:29:21+02:00;
+          sha256 = "0xpjzcvyh4dpqfaj4f6h1xgpxqd1nbyg8xwdsq3a6sadm1f3x73c";
         };
       };
 
-      valign = compileElisp {
-        name = "valign";
-        src = fetchFromGitHub {
-          owner = "casouri";
-          repo = "valign";
-          rev = "455cb2c6f772a80f8aac40117ea4a9160ef47ac5";
-          sha256 = "0x7h26k29454djscsbzbr4acxyiznxmkhqp6fwlq40mijngk52ac";
-        };
-      };
+      # tridactyl-mode = compileElisp {
+      #   name = "tridactyl-mode";
+      #   src = fetchFromGitHub {
+      #     owner = "Fuco1";
+      #     repo = "tridactyl-mode";
+      #     rev = "0bbe8d94aef9faaf6d3a7e2955c1222fe96ea2e7";
+      #     sha256 = "0jd1mg2k4hsfg30fg484br9g8ml10y8n0cljxkx3g6qb20aqdnqf";
+      #     # date = 2018-09-23T00:18:10+02:00;
+      #   };
+      # };
 
-      yasnippet-snippets = (compileElisp {
-        name = "yasnippet-snippets";
-        src = fetchFromGitHub {
-          owner = "AndreaCrotti";
-          repo = "yasnippet-snippets";
-          rev = "d5ef8ed2b34798c1576f2fbfed858ee5486d1792";
-          sha256 = "1b9410a6mvkqvarzfv1sbj9x6f6m8x7jh56gshndh1m4lhl2gf3p";
-          # date = 2020-06-06T12:49:44+01:00;
-        };
-        buildInputs = with epkgs; [ yasnippet ];
+      # valign = compileElisp {
+      #   name = "valign";
+      #   src = fetchFromGitHub {
+      #     owner = "casouri";
+      #     repo = "valign";
+      #     rev = "455cb2c6f772a80f8aac40117ea4a9160ef47ac5";
+      #     sha256 = "0x7h26k29454djscsbzbr4acxyiznxmkhqp6fwlq40mijngk52ac";
+      #   };
+      # };
 
-      }).overrideAttrs (oldAttrs: rec {
-        installPhase = ''
-          mkdir -p $out/share/emacs/site-lisp
-          install *.el* $out/share/emacs/site-lisp
-          cp -r snippets $out/share/emacs/site-lisp/snippets
-        '';
-      });
+      # yasnippet-snippets = (compileElisp {
+      #   name = "yasnippet-snippets";
+      #   src = fetchFromGitHub {
+      #     owner = "AndreaCrotti";
+      #     repo = "yasnippet-snippets";
+      #     rev = "d5ef8ed2b34798c1576f2fbfed858ee5486d1792";
+      #     sha256 = "1b9410a6mvkqvarzfv1sbj9x6f6m8x7jh56gshndh1m4lhl2gf3p";
+      #     # date = 2020-06-06T12:49:44+01:00;
+      #   };
+      #   buildInputs = with epkgs; [ yasnippet ];
+
+      # }).overrideAttrs (oldAttrs: rec {
+      #   installPhase = ''
+      #     mkdir -p $out/share/emacs/site-lisp
+      #     install *.el* $out/share/emacs/site-lisp
+      #     cp -r snippets $out/share/emacs/site-lisp/snippets
+      #   '';
+      # });
 
     };
 
