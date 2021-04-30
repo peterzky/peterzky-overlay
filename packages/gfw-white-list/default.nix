@@ -8,12 +8,12 @@ stdenv.mkDerivation rec {
     # date = 2020-11-02T10:17:12+00:00;
   };
   buildPhase = ''
-    make unbound
+    make dnsmasq
   '';
   installPhase = ''
-    install -m644 -D accelerated-domains.china.unbound.conf $out/share/accelerated-domains.china.unbound.conf
-    install -m644 -D apple.china.unbound.conf $out/share/apple.china.unbound.conf
-    install -m644 -D google.china.unbound.conf $out/share/google.china.unbound.conf
+    install -m644 -D accelerated-domains.china.dnsmasq.conf $out/accelerated-domains.china.dnsmasq.conf
+    install -m644 -D apple.china.dnsmasq.conf $out/apple.china.dnsmasq.conf
+    install -m644 -D google.china.dnsmasq.conf $out/google.china.dnsmasq.conf
   '';
 
 }

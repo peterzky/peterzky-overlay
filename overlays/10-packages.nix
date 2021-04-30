@@ -1,11 +1,6 @@
 self: super: {
   ncsdk-fw = super.callPackage ../packages/ncsdk/ncsdk-fw.nix {};
 
-  unbound-root-hint = super.writeTextFile {
-    name = "root.hint";
-    text = builtins.readFile ../files/root.hint;
-  };
-
   ncsdk = super.callPackage ../packages/ncsdk/ncsdk.nix {
     ncsdk-fw = self.ncsdk-fw;
     pythonPackages = super.python3Packages;
