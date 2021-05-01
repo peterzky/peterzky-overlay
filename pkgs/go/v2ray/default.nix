@@ -42,7 +42,6 @@ in buildGoPackage rec {
   goDeps = ./deps.nix;
 
   postInstall = ''
-    mkdir -p $out/bin/ext
     mv $out/bin/main $out/bin/v2ray
     install -Dm755 ${domain} $out/ext/geosite.dat
     install -Dm755 ${geoip} $out/ext/geoip.dat
