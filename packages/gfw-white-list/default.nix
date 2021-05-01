@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     # date = 2020-11-02T10:17:12+00:00;
   };
   buildPhase = ''
-    make dnsmasq
+    make SERVER=119.29.29.29 dnsmasq
   '';
   installPhase = ''
     install -m644 -D accelerated-domains.china.dnsmasq.conf $out/accelerated-domains.china.dnsmasq.conf
