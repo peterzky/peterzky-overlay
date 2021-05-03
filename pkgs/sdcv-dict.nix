@@ -1,14 +1,20 @@
-{ stdenv, fetchzip }:
+{ stdenv, fetchFromGitHub }:
 
-fetchzip rec {
-  name = "langdao-ec-gb";
-  url =
-    "https://github.com/peterzky/nixos-electron-cache/raw/master/ld-dict.tar.bz2";
-  sha256 = "1v7xagkcrpkb328816nlar6saymr6x8xw5hmfmgph66k8wkfm0hj";
-  postFetch = ''
-    mkdir -p $out/share/ld-dict
-    tar xjf $downloadedFile -C $out/share
-    mv $out/share/stardict-langdao-ec-gb-2.4.2/* $out/share/ld-dict
-    rmdir $out/share/stardict-langdao-ec-gb-2.4.2
+stdenv.mkDerivation {
+  name = "sdcv-dict";
+  src = fetchFromGitHub {
+    owner = "peterzky";
+    repo = "startdict_dictionary";
+    rev = "0243363d9757bff738faef35627b998dc6cebe97";
+    # date = 2021-05-03T22:26:53+08:00;
+    sha256 = "0d1kgs52npq2ww4dms8af3qz79fsdk68qihv1b83bhhzfd12x4xm";
+  };
+  dontBuild = true;
+  installPhase = ''
+    mkdir -p $out
+    for dict in *.tar.bz2; do
+      tar xjf $dict -C $out
+    done
   '';
+
 }

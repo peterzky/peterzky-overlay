@@ -144,7 +144,7 @@
 
             san-francisco-font = prev.callPackage ./pkgs/san-francisco-font.nix {};
 
-            my-sdcv-dict = prev.callPackage ./pkgs/sdcv-dict.nix {};
+            sdcv-dict = prev.callPackage ./pkgs/sdcv-dict.nix {};
 
             # script
             audio-switch-menu = prev.callPackage ./pkgs/shell-script/audio-switch-menu.nix {};
