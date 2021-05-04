@@ -15,12 +15,10 @@ final: prev:
   );
 
   i3-wk-switch = final.python3Packages.i3-wk-switch;
-  # libs
-  libqcef = prev.callPackage ../pkgs/libqcef.nix {};
 
   # files
   chnroute-ipset =
-    prev.writeText "chnrout.ipset" (builtins.readFile ./files/chnroute.ipset);
+    prev.writeText "chnrout.ipset" (builtins.readFile ../files/chnroute.ipset);
 
   # packages
   wayst-git = prev.wayst.overrideAttrs (
@@ -36,8 +34,6 @@ final: prev:
   );
 
   nvd = prev.callPackage ../pkgs/nvd {};
-
-  sws = prev.callPackage ../pkgs/shell-script/sws {};
 
   interception-tools-plugins = prev.interception-tools-plugins // {
     space2meta = prev.callPackage ../pkgs/space2meta {};

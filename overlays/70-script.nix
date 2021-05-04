@@ -1,5 +1,7 @@
 final: prev:
 {
+  sws = prev.callPackage ../pkgs/shell-script/sws {};
+
   audio-switch-menu = prev.callPackage ../pkgs/shell-script/audio-switch-menu.nix {};
 
   screen-dict = prev.callPackage ../pkgs/shell-script/screen-dict.nix {};
