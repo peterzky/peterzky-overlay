@@ -4,18 +4,18 @@ let
     let
       inherit (epkgs) emacs;
       inherit (prev) stdenv fetchFromGitHub fetchFromGitLab fetchgit;
-      compileElisp = prev.callPackage ./pkgs/emacs/builder.nix;
+      compileElisp = prev.callPackage ../pkgs/emacs/builder.nix;
     in
       {
         my-anki = compileElisp {
           name = "my-anki";
-          src = ./pkgs/emacs/my-anki;
+          src = ../pkgs/emacs/my-anki;
           buildInputs = with epkgs; [ org anki-editor dash request ];
         };
 
         my-speed-type = compileElisp {
           name = "my-speed-type";
-          src = ./pkgs/emacs/speed-type;
+          src = ../pkgs/emacs/speed-type;
           buildInputs = with epkgs; [ evil org ];
         };
 
