@@ -41,17 +41,6 @@ final: prev:
 
   foot-git = prev.callPackage ../pkgs/foot {};
 
-  wlroots-river = prev.callPackage ../pkgs/wlroots {};
-
-  zig-git = prev.callPackage ../pkgs/zig-git {
-    llvmPackages = prev.llvmPackages_11;
-  };
-
-  river = prev.callPackage ../pkgs/river {
-    zig = final.zig-git;
-    wlroots = final.wlroots-river;
-  };
-
   v2ray = prev.callPackage ../pkgs/go/v2ray {};
 
   gfw-white-list = prev.callPackage ../pkgs/gfw-white-list {};
