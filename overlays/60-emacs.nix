@@ -5,6 +5,7 @@ let
       inherit (epkgs) emacs;
       inherit (prev) stdenv fetchFromGitHub fetchFromGitLab fetchgit;
       compileElisp = prev.callPackage ../pkgs/emacs/builder.nix;
+      noCompileElisp = prev.callPackage ../pkgs/emacs/no-build.nix;
     in
       {
         my-anki = compileElisp {
@@ -20,14 +21,13 @@ let
         };
 
         org-roam-v2 = compileElisp {
+          emacs = prev.emacsPgtkGcc;
           name = "org-roam";
-          # nix-prefetch-git --branch-name v2 https://github.com/org-roam/org-roam.git
-          src = fetchgit {
-            url = "https://github.com/org-roam/org-roam.git";
-            branchName = "v2";
-            rev = "9da45b54f3ac69994de8f28a41dfefe3d786d875";
-            # date = 2021-04-16T13:02:48+08:00;
-            sha256 = "1k5jqmnrsgm9hwh060xi27k2klgi9vk1hyd7nhqm0vn2cvp3js2v";
+          src = fetchFromGitHub {
+            owner = "org-roam";
+            repo = "org-roam";
+            rev = "2.0.0a1";
+            sha256 = "05aqqvq3vxfj1g6kbqli0dpmrlplmzq14lazcfw5sq1km48irh60";
           };
 
           buildInputs = with epkgs; [

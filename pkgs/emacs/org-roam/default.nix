@@ -1,4 +1,4 @@
-{ stdenv, emacsPackages, emacs }:
+{ fetchFromGitHub, stdenv, emacsPackages, emacs }:
 stdenv.mkDerivation rec {
   name = "org-roam-${version}";
   version = "2.0.0a1";

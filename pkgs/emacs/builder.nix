@@ -1,6 +1,6 @@
 { stdenv
 , pkgs
-, emacsPgtkGcc
+, emacs
 , name
 , src
 , buildInputs ? []
@@ -12,7 +12,7 @@ stdenv.mkDerivation {
   unpackCmd = ''
     test -f "${src}" && mkdir el && cp -p ${src} el/${name}
   '';
-  buildInputs = [ emacsPgtkGcc ] ++ buildInputs;
+  buildInputs = [ emacs ] ++ buildInputs;
   buildPhase = ''
     ${preBuild}
     ARGS=$(find ${pkgs.lib.concatStrings
@@ -20,7 +20,7 @@ stdenv.mkDerivation {
                  -type d -exec echo -L {} \;)
     mkdir $out
     export HOME=$out
-    ${emacsPgtkGcc}/bin/emacs -Q -nw -L . $ARGS --batch -f batch-byte-compile *.el
+    ${emacs}/bin/emacs -Q -nw -L . $ARGS --batch -f batch-byte-compile *.el
   '';
   installPhase = ''
     mkdir -p $out/share/emacs/site-lisp

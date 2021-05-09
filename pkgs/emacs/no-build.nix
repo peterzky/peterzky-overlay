@@ -18,8 +18,8 @@ stdenv.mkDerivation {
     mkdir $out
   '';
   installPhase = ''
-    mkdir -p $out/share/emacs/site-lisp
-    install *.el* $out/share/emacs/site-lisp
+    mkdir -p $out/share/emacs/site-lisp/${name}
+    install *.el $out/share/emacs/site-lisp/${name}/
   '';
   meta = {
     description = "Emacs projects from the Internet that just compile .el files";
