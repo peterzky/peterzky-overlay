@@ -9,4 +9,6 @@ final: prev:
   volume-ctl = prev.callPackage ../pkgs/shell-script/volume-ctl.nix {};
 
   lf-pv = prev.callPackage ../pkgs/shell-script/lf-pv.nix {};
+
+  lsix = prev.callPackage ../pkgs/shell-script/lsix.nix {};
 }

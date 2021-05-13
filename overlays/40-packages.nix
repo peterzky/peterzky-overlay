@@ -1,18 +1,5 @@
 final: prev:
 {
-  autotiling-git = prev.autotiling.overrideAttrs (
-    oldAttrs: rec {
-      name = "autotiling-${version}";
-      version = "git";
-      src = prev.fetchFromGitHub {
-        owner = "nwg-piotr";
-        repo = "autotiling";
-        rev = "0451e5b615d8c23c760047cc01e8358af7acdddf";
-        # date = 2021-03-17T01:08:26+01:00;
-        sha256 = "0ih8yd1gankjxn88gd88vxs6f1cniyi04z25jz4nsgqi9snz65v4";
-      };
-    }
-  );
 
   i3-wk-switch = final.python3Packages.i3-wk-switch;
 
