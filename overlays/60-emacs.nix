@@ -7,7 +7,7 @@ let
       compileElisp = prev.callPackage ../pkgs/emacs/builder.nix;
       noCompileElisp = prev.callPackage ../pkgs/emacs/no-build.nix;
     in
-      {
+      epkgs // {
         my-anki = compileElisp {
           name = "my-anki";
           src = ../pkgs/emacs/my-anki;
