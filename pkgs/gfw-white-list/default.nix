@@ -3,12 +3,12 @@ stdenv.mkDerivation rec {
   name = "gfw-white-list";
   src = fetchgit {
     url = "http://github.com/felixonmars/dnsmasq-china-list.git";
-    rev = "77d061180aa6f7b2acdf7d831a8d3da9bc056b29";
-    sha256 = "1fjphv8vdh2jwy116c5vn8lr34k749dvgirpk166az97fs86h3nf";
+    rev = "a5ecf2ef022d1b383f3fe318304d31e19b1188b1";
+    sha256 = "145yrl33hl0m9p93i9wzzhx418lig333lihz9rhvq4d4kk3jqkn8";
     # date = 2020-11-02T10:17:12+00:00;
   };
   buildPhase = ''
-    make SERVER=119.29.29.29 dnsmasq
+    make dnsmasq
   '';
   installPhase = ''
     install -m644 -D accelerated-domains.china.dnsmasq.conf $out/accelerated-domains.china.dnsmasq.conf

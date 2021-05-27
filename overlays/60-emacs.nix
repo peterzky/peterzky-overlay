@@ -8,10 +8,22 @@ let
       noCompileElisp = prev.callPackage ../pkgs/emacs/no-build.nix;
     in
       epkgs // {
+
         my-anki = compileElisp {
           name = "my-anki";
           src = ../pkgs/emacs/my-anki;
           buildInputs = with epkgs; [ org anki-editor dash request ];
+        };
+
+        git-undo = compileElisp {
+          name = "git-undo";
+          src = fetchFromGitHub {
+            owner = "jwiegley";
+            repo = "git-undo-el";
+            rev = "cf31e38e7889e6ade7d2d2b9f8719fd44f52feb5";
+            # date = 2019-12-21T11:05:45-08:00;
+            sha256 = "10f9h8dby3ygkjqwizrif7v1wpwc8iqam5bvayahrabs87s0lnbi";
+          };
         };
 
         my-speed-type = compileElisp {
@@ -42,16 +54,17 @@ let
 
         };
 
-        modus-themes = compileElisp {
-          name = "modus-themes";
-          src = fetchFromGitLab {
-            owner = "protesilaos";
-            repo = "modus-themes";
-            rev = "6122a90e037b73d617163c7c9ae1bfb1e0a47822";
-            # date = 2020-11-14T09:29:21+02:00;
-            sha256 = "0xpjzcvyh4dpqfaj4f6h1xgpxqd1nbyg8xwdsq3a6sadm1f3x73c";
-          };
-        };
+        # modus-themes = compileElisp {
+        #   name = "modus-themes";
+        #   src = fetchFromGitLab {
+        #     owner = "protesilaos";
+        #     repo = "modus-themes";
+        #     rev = "6122a90e037b73d617163c7c9ae1bfb1e0a47822";
+        #     # date = 2020-11-14T09:29:21+02:00;
+        #     sha256 = "0xpjzcvyh4dpqfaj4f6h1xgpxqd1nbyg8xwdsq3a6sadm1f3x73c";
+        #   };
+        # };
+
       };
 
 in
