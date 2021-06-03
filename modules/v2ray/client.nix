@@ -57,6 +57,7 @@ in
         domain = [
           "regexp:.\\steam.*\\.com$"
           "domain:jd.com"
+          "domain:tsinghua.edu.cn"
           "domain:peterzky.xyz"
           "domain:qq.com"
           "geosite:cn"
