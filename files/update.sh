@@ -1,5 +1,4 @@
-#!/usr/bin/env nix-shell
-#!nix-shell -i bash -p curl
+#!/usr/bin/env bash
 update_list() {
     cat /tmp/chnroute.ipset > ./chnroute.ipset
         echo "List has been updated."

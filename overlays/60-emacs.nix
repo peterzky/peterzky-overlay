@@ -54,20 +54,32 @@ let
 
         };
 
-        # modus-themes = compileElisp {
-        #   name = "modus-themes";
-        #   src = fetchFromGitLab {
-        #     owner = "protesilaos";
-        #     repo = "modus-themes";
-        #     rev = "6122a90e037b73d617163c7c9ae1bfb1e0a47822";
-        #     # date = 2020-11-14T09:29:21+02:00;
-        #     sha256 = "0xpjzcvyh4dpqfaj4f6h1xgpxqd1nbyg8xwdsq3a6sadm1f3x73c";
-        #   };
-        # };
-
       };
+  peter-emacs-config = prev.writeText "default.el"
+    (builtins.readFile ../files/pmacs.el);
+
+
 
 in
 {
   inherit my-epkg-overrides;
+  # minimal emacs with selective packages
+  pmacs = prev.emacs.pkgs.withPackages (
+    epkgs: (
+      with epkgs.melpaStablePackages; [
+        (
+          prev.runCommand "default.el" {} ''
+            mkdir -p $out/share/emacs/site-lisp
+            cp ${peter-emacs-config} $out/share/emacs/site-lisp/default.el
+          ''
+        )
+        company
+        magit
+        projectile
+        use-package
+        selectrum
+        crux
+      ]
+    )
+  );
 }
