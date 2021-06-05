@@ -79,6 +79,7 @@ in
         use-package
         selectrum
         crux
+        nix-mode
       ]
     )
   );

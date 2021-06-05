@@ -56,3 +56,11 @@
   :defer 5
   :config
   (projectile-global-mode))
+
+(use-package nix-mode
+  :magic
+  ("\.nix$" . nix-mode)
+  :hook
+  (nix-mode . eglot-ensure)
+  :custom
+  (nix-indent-function 'nix-indent-line))
