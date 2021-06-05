@@ -3,8 +3,13 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
+    nixpkgs.url = "https://mirrors.ustc.edu.cn/nix-channels/releases/nixpkgs-unstable%40nixpkgs-21.11pre293448.2a1c29ef4ba/nixexprs.tar.xz";
   };
+
+  nixConfig.substituters =
+    [
+      "https://mirrors.ustc.edu.cn/nix-channels/store"
+    ];
 
   outputs = { self, nixpkgs, flake-utils }:
     let
