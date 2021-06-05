@@ -24,6 +24,21 @@
 (show-paren-mode 1)
 (recentf-mode 1)
 
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(put 'narrow-to-region 'disabled nil)
+(put 'set-goal-column 'disabled nil)
+
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+(setq initial-scratch-message "")
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(setq next-screen-context-lines 2)
+
 (use-package company
   :diminish company-mode
   :commands (company-mode global-company-mode)
