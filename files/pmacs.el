@@ -4,17 +4,17 @@
 (eval-when-compile
   (require 'use-package))
 
-(setq inhibit-startup-screen t
-      use-dialog-box nil
-      create-lockfiles nil
-      help-window-select t
-      vc-follow-symlinks "Follow link"
-      show-paren-style 'parenthesis
-      Man-notify-method 'pushy
-      gc-cons-threshold 20000000
-      compilation-scroll-output t
-      ring-bell-function 'ignore
-      max-lisp-eval-depth 10000)
+(setq inhibit-startup-screen t)
+(setq use-dialog-box nil)
+(setq create-lockfiles nil)
+(setq help-window-select t)
+(setq vc-follow-symlinks "Follow link")
+(setq show-paren-style 'parenthesis)
+(setq Man-notify-method 'pushy)
+(setq gc-cons-threshold 20000000)
+(setq compilation-scroll-output t)
+(setq ring-bell-function 'ignore)
+(setq max-lisp-eval-depth 10000)
 
 (line-number-mode -1)
 (scroll-bar-mode -1)
