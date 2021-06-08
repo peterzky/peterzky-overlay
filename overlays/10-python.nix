@@ -5,6 +5,10 @@ let
       buildPythonPackage = python-prev.buildPythonPackage;
       i3ipc = python-prev.i3ipc;
     };
+    i3-quickterm = prev.callPackage ../pkgs/python/i3-quickterm {
+      buildPythonPackage = python-prev.buildPythonPackage;
+      i3ipc = python-prev.i3ipc;
+    };
   };
 in
 rec {

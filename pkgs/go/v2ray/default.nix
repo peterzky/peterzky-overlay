@@ -11,8 +11,8 @@ let
       "https://github.com/v2ray/geoip/releases/download/${geoipRev}/geoip.dat";
     sha256 = geoipSha256;
   };
-  geositeRev = "20210531212831";
-  geositeSha256 = "1llflzadqzsibfsqldpwjf94yiqfwvjlx85xi6zjsn29mx9vwark";
+  geositeRev = "20210606142051";
+  geositeSha256 = "137ih4d2xx97alclvb0srx05i977p8bzdi7yfxkdi46bh5rfxrh0";
   domain = fetchurl {
     url =
       "https://github.com/v2ray/domain-list-community/releases/download/${geositeRev}/dlc.dat";

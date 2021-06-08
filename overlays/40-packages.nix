@@ -3,6 +3,8 @@ final: prev:
 
   i3-wk-switch = final.python3Packages.i3-wk-switch;
 
+  i3-quickterm = final.python3Packages.i3-quickterm;
+
   # files
   chnroute-ipset =
     prev.writeText "chnrout.ipset" (builtins.readFile ../files/chnroute.ipset);
