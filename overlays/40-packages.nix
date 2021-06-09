@@ -4,6 +4,21 @@ final: prev:
   i3-wk-switch = final.python3Packages.i3-wk-switch;
 
   i3-quickterm = final.python3Packages.i3-quickterm;
+  # nix-direnv enable flakes
+  nix-direnv = (
+    prev.nix-direnv.overrideAttrs (
+      oldAttrs: rec {
+        version = "1.4.0";
+        src = prev.fetchFromGitHub {
+          owner = "nix-community";
+          repo = "nix-direnv";
+          rev = "4cb1aa4f104ae5a28e8505f10e38c2779faaf23c";
+          # date = 2021-06-03T18:55:23+02:00;
+          sha256 = "04g8i6s8izmyksm5nc7jdzspfk61arq59jg30brj2l3y4a8prw7z";
+        };
+      }
+    )
+  ).override { enableFlakes = true; };
 
   # files
   chnroute-ipset =
