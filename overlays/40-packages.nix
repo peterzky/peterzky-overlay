@@ -4,21 +4,6 @@ final: prev:
   i3-wk-switch = final.python3Packages.i3-wk-switch;
 
   i3-quickterm = final.python3Packages.i3-quickterm;
-  # nix-direnv enable flakes
-  nix-direnv = (
-    prev.nix-direnv.overrideAttrs (
-      oldAttrs: rec {
-        version = "1.4.0";
-        src = prev.fetchFromGitHub {
-          owner = "nix-community";
-          repo = "nix-direnv";
-          rev = "4cb1aa4f104ae5a28e8505f10e38c2779faaf23c";
-          # date = 2021-06-03T18:55:23+02:00;
-          sha256 = "04g8i6s8izmyksm5nc7jdzspfk61arq59jg30brj2l3y4a8prw7z";
-        };
-      }
-    )
-  ).override { enableFlakes = true; };
 
   # files
   chnroute-ipset =
@@ -52,4 +37,18 @@ final: prev:
   san-francisco-font = prev.callPackage ../pkgs/san-francisco-font.nix {};
 
   sdcv-dict = prev.callPackage ../pkgs/sdcv-dict.nix {};
+
+  # Suckless Tools
+  st = prev.st.overrideAttrs (
+    oldAttrs: rec {
+      src = prev.fetchgit {
+        url = "https://github.com/peterzky/st.git";
+        rev = "ea6d1e9676c72c15fc664551dcc257b74b189f22";
+        sha256 = "1g6pxnzkf5c5mlvjax5zbnnf7piq28ar6ywfdcf7k5w8sq1m0vx7";
+        # date = 2019-07-09T17:53:15+08:00;
+      };
+    }
+  );
+
+
 }
