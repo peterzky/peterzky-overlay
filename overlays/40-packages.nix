@@ -5,6 +5,8 @@ final: prev:
 
   i3-quickterm = final.python3Packages.i3-quickterm;
 
+  dry-python-return = final.python3Packages.returns;
+
   # files
   chnroute-ipset =
     prev.writeText "chnrout.ipset" (builtins.readFile ../files/chnroute.ipset);
