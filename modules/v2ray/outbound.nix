@@ -1,11 +1,11 @@
 { address, id, port, path }: {
   na = {
     mux = {
-      enabled = false;
+      enabled = true;
       concurrency = 8;
     };
     tag = "na";
-    protocol = "vless";
+    protocol = "vmess";
     settings = {
       vnext = [
         {
@@ -13,6 +13,7 @@
           users = [
             {
               inherit id;
+              alterId = 2;
               encryption = "none";
               level = 0;
 
