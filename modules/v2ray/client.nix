@@ -17,24 +17,13 @@ let
     };
   };
 
-  dns = {
-    protocol = "dokodemo-door";
-    port = 5354;
-    settings = {
-      address = "8.8.8.8";
-      port = 53;
-      network = "udp";
-      timeout = 0;
-      followRedirect = false;
-    };
-  };
 
   transport = import ./transport.nix;
 
   inherit na direct;
 in
 {
-  inbounds = [ dokodemo dns ];
+  inbounds = [ dokodemo ];
 
   outbounds = [ na direct ];
 
