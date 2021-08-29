@@ -56,7 +56,12 @@ in
       {
         type = "field";
         outboundTag = "direct";
-        ip = [ "geoip:cn" "geoip:private" ];
+        ip = [
+          "geoip:cn"
+          "geoip:private"
+          "100.86.248.28"
+          "100.112.201.124"
+        ];
       }
 
     ];

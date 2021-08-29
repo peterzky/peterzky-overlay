@@ -1,4 +1,4 @@
-{ writeShellScriptBin, wofi, libnotify }:
+{ writeShellScriptBin, dmenu, libnotify }:
 writeShellScriptBin "audio-switch-menu" ''
   # shift audio stream to new output
   function shift_stream () {
@@ -10,7 +10,7 @@ writeShellScriptBin "audio-switch-menu" ''
       done
   }
   choices=$(pactl list short sinks | awk '{print $2}')
-  chosen=$(echo -e "$choices" | ${wofi}/bin/wofi --dmenu --prompt Audio)
+  chosen=$(echo -e "$choices" | ${dmenu}/bin/dmenu -p Audio)
 
   if [ -z "$chosen" ]; then
       exit 0
