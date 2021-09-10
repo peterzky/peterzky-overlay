@@ -4,14 +4,14 @@
 # substitute 'go.googlesource.com' with 'github.com/golang' in deps.nix
 { buildGoPackage, fetchurl, fetchFromGitHub }:
 let
-  geoipRev = "202109020025";
-  geoipSha256 = "1f3vp448qqcjgp17riqlnq006nlx0ci4g5gix7nsnn7kc4li557d";
+  geoipRev = "202109090028";
+  geoipSha256 = "0qh8yf0m6sna3z5i2plbgw61q08qcfcx0l1z5bmwxijagf1yb7fa";
   geoip = fetchurl {
     url =
       "https://github.com/v2ray/geoip/releases/download/${geoipRev}/geoip.dat";
     sha256 = geoipSha256;
   };
-  geositeRev = "20210901054852";
+  geositeRev = "20210906031055";
   geositeSha256 = "1hgnr9wzxynbn7w90s40j7lmlj888vh8q72cnk86c42szmvbh63n";
   domain = fetchurl {
     url =
