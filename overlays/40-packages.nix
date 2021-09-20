@@ -5,11 +5,13 @@ final: prev:
 
   i3-quickterm = final.python3Packages.i3-quickterm;
 
-  dry-python-return = final.python3Packages.returns;
+  # dry-python-return = final.python3Packages.returns;
+
+  smartdns = prev.callPackage ../pkgs/smartdns.nix {};
 
   # files
-  chnroute-ipset =
-    prev.writeText "chnrout.ipset" (builtins.readFile ../files/chnroute.ipset);
+  mycnip =
+    prev.writeText "cnip.txt" (builtins.readFile ../files/cnip.txt);
 
   # packages
   wayst-git = prev.wayst.overrideAttrs (
