@@ -3,7 +3,7 @@ final: prev:
 
   i3-wk-switch = final.python3Packages.i3-wk-switch;
 
-  i3-quickterm = final.python3Packages.i3-quickterm;
+  # i3-quickterm = final.python3Packages.i3-quickterm;
 
   # dry-python-return = final.python3Packages.returns;
 
@@ -33,11 +33,11 @@ final: prev:
     space2meta = prev.callPackage ../pkgs/space2meta {};
   };
 
-  foot-git = prev.callPackage ../pkgs/foot {};
+  # foot-git = prev.callPackage ../pkgs/foot {};
 
   v2ray = prev.callPackage ../pkgs/go/v2ray {};
 
-  gfw-white-list = prev.callPackage ../pkgs/gfw-white-list {};
+  # gfw-white-list = prev.callPackage ../pkgs/gfw-white-list {};
 
   san-francisco-font = prev.callPackage ../pkgs/san-francisco-font.nix {};
 
