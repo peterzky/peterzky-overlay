@@ -7,25 +7,25 @@ final: prev:
 
   # dry-python-return = final.python3Packages.returns;
 
-  smartdns = prev.callPackage ../pkgs/smartdns.nix {};
+  # smartdns = prev.callPackage ../pkgs/smartdns.nix {};
 
   # files
   mycnip =
     prev.writeText "cnip.txt" (builtins.readFile ../files/cnip.txt);
 
   # packages
-  wayst-git = prev.wayst.overrideAttrs (
-    oldAttrs: rec {
-      version = "2021-06-16";
-      src = prev.fetchFromGitHub {
-        owner = "91861";
-        repo = "wayst";
-        rev = "b3722bb60828d443c07667b01031af68769db9df";
-        # date = 2021-06-16T19:42:38+02:00;
-        sha256 = "0jv5jmikivsm7ark9sxf16dhm61vy17vqip0w3c9dcbn6ysbhjml";
-      };
-    }
-  );
+  # wayst-git = prev.wayst.overrideAttrs (
+  #   oldAttrs: rec {
+  #     version = "2021-06-16";
+  #     src = prev.fetchFromGitHub {
+  #       owner = "91861";
+  #       repo = "wayst";
+  #       rev = "b3722bb60828d443c07667b01031af68769db9df";
+  #       # date = 2021-06-16T19:42:38+02:00;
+  #       sha256 = "0jv5jmikivsm7ark9sxf16dhm61vy17vqip0w3c9dcbn6ysbhjml";
+  #     };
+  #   }
+  # );
 
   nvd = prev.callPackage ../pkgs/nvd {};
 
@@ -33,7 +33,6 @@ final: prev:
     space2meta = prev.callPackage ../pkgs/space2meta {};
   };
 
-  # foot-git = prev.callPackage ../pkgs/foot {};
 
   v2ray = prev.callPackage ../pkgs/go/v2ray {};
 
