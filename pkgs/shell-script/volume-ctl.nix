@@ -1,4 +1,4 @@
-{ writeShellScriptBin, pamixer, dunst }:
+{ writeShellScriptBin, pamixer, dunst, pulseaudio }:
 
 writeShellScriptBin "volume-ctl" ''
   id=/tmp/volume_nofity
@@ -42,15 +42,15 @@ writeShellScriptBin "volume-ctl" ''
 
   case $1 in
     up)
-      pactl set-sink-volume @DEFAULT_SINK@ +2%
+      ${pulseaudio}/bin/pactl set-sink-volume @DEFAULT_SINK@ +2%
       send_notification_vol
       ;;
     down)
-      pactl set-sink-volume @DEFAULT_SINK@ -2%
+      ${pulseaudio}/bin/pactl set-sink-volume @DEFAULT_SINK@ -2%
       send_notification_vol
       ;;
     mute)
-      pactl set-sink-mute @DEFAULT_SINK@ toggle
+      ${pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
       send_notification_mute
       ;;
   esac
