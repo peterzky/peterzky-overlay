@@ -11,12 +11,12 @@ rustPlatform.buildRustPackage rec {
   src = fetchFromGitHub {
     owner = "leftwm";
     repo = "leftwm";
-    rev = "2c644b2ac116e621e72ffd43d4004bc1c3e22973";
-    sha256 = "1wzak7y4hf3da8j5cps0jch9zm66lihl37rpnwj7xfbvzsma9qs5";
-    # date = 2021-10-06T08:22:11-05:00;
+    rev = "b4a06860ee5715ce89bc882012e2406a70c7795b";
+    sha256 = "0hv1yw4csnbsbq10fs9v04vfka2j8dh3yjg93sj7gwxxciryfgby";
+    # date = 2021-10-07T08:14:10-05:00;
   };
 
-  cargoHash = "sha256-j4seuMO1N1NuwjQJr9nfMMLwSJ/cWGTuY9ph/3/PUDw=";
+  cargoHash = "sha256-gFiKtIDIyvMWK0GuFd6guvGa+a23zcqafEuzdljqk+k=";
 
   buildInputs = rpathLibs;
 
