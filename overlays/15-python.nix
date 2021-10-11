@@ -11,17 +11,12 @@ let
     };
 
   };
-  # for python3.8
-  returnsOverrides = import ../pkgs/python/pip2nix/returns.nix {
-    fetchurl = prev.fetchurl;
-    pkgs = null;
-    fetchgit = null;
-    fetchhg = null;
-  };
+
 in
 rec {
   python3 = prev.python3.override {
     packageOverrides = prev.lib.composeManyExtensions
-      [ myOverrides returnsOverrides ];
+      [ myOverrides ];
   };
+  notify-send-py = prev.callPackage ../pkgs/python/notify-send { };
 }
