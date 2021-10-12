@@ -12,7 +12,7 @@ final: prev:
 
   # lsix = prev.callPackage ../pkgs/shell-script/lsix.nix {};
   tts = prev.writeScriptBin "tts" ''
-    ${prev.python3Packages.gtts}/bin/gtts-cli "$(${prev.xclip}/bin/xclip -o)" | mpv -
+    ${prev.python3Packages.gtts}/bin/gtts-cli "$(${prev.xclip}/bin/xclip -o)" | mpv --speed=1.2 -
   '';
 
   sway-lid-state = prev.writeScript "sway-lib-state" ''
