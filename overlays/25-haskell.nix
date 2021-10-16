@@ -19,9 +19,9 @@ let
       src = prev.fetchFromGitHub {
         owner = "xmonad";
         repo = "xmonad-contrib";
-        rev = "5085e72217c5e17233ab3492bcd3d1c3a9c2e40e";
-        # date = 2021-10-13T20:38:39+02:00;
-        sha256 = "0jaq8ck7ksf2ycxg7ybqi4ra65d2qjk5nnnl6kwbw9c8b9mr7khd";
+        rev = "fa3536b40bc121b6cc724ee393b14b7db44db890";
+        # date = 2021-10-14T13:50:09-04:00;
+        sha256 = "1fgyds0xbxirn0sx25cj7sivmp0a8pdkrzgdbq8dsj54pna6xm6l";
       };
       version = "0.16.999";
       doCheck = false;

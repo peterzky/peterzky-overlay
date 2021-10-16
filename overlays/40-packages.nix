@@ -3,6 +3,8 @@ final: prev:
 
   leftwm-git = prev.callPackage ../pkgs/leftwm-git.nix { };
 
+  blesh = prev.callPackage ../pkgs/blesh.nix { };
+
   # files
   mycnip =
     prev.writeText "cnip.txt" (builtins.readFile ../files/cnip.txt);
