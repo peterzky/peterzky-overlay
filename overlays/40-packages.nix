@@ -23,18 +23,6 @@ final: prev:
   );
 
 
-  # fcitx5 = prev.fcitx5.overrideAttrs (
-  #   oldAttrs: rec {
-  #     version = "5.0.8";
-  #     src = prev.fetchFromGitHub {
-  #       owner = "fcitx";
-  #       repo = "fcitx5";
-  #       rev = "5.0.8";
-  #       sha256 = "0czj2awvgk9apdh9rj3vcb04g8x2wp1d4sshvch31nwpqs10hssr";
-  #     };
-  #   }
-  # );
-
   # packages
   # wayst-git = prev.wayst.overrideAttrs (
   #   oldAttrs: rec {
