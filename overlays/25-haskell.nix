@@ -5,11 +5,16 @@ let
       src = prev.fetchFromGitHub {
         owner = "xmonad";
         repo = "xmonad";
-        rev = "33a86c0cdb9aa481e23cc5527a997adef5e32d42";
-        # date = 2021-09-14T11:25:18+01:00;
-        sha256 = "05531x3ixi0r52z86qsrg92cl7rwpgs98asspqb02nljjkbdrhpq";
+        rev = "b5b95e27ce94c51f07a0613674749278af1f5f6c";
+        # date = 2021-10-17T10:14:02+02:00;
+        sha256 = "0v7vxnn0sqrahkj08rfam703rl93ks9g2wy10dlcpzsvb5b85j4s";
       };
-      version = "0.16.99999";
+      version = prev.lib.concatStrings
+        [
+          "0.16.99999"
+          "-"
+          (prev.lib.substring 0 5 src.rev)
+        ];
       patches = [ ];
       editedCabalFile = null;
     }
@@ -19,11 +24,16 @@ let
       src = prev.fetchFromGitHub {
         owner = "xmonad";
         repo = "xmonad-contrib";
-        rev = "fa3536b40bc121b6cc724ee393b14b7db44db890";
-        # date = 2021-10-14T13:50:09-04:00;
-        sha256 = "1fgyds0xbxirn0sx25cj7sivmp0a8pdkrzgdbq8dsj54pna6xm6l";
+        rev = "e0c7e35b3dcdf0e1f9ceccf9c11b3c053ec7cf61";
+        # date = 2021-10-19T21:54:01+02:00;
+        sha256 = "0xajhmwkjybvnfw05xwvi726q94zggysxb7rhd25ccyaqg4k821a";
       };
-      version = "0.16.999";
+      version = prev.lib.concatStrings
+        [
+          "0.16.999"
+          "-"
+          (prev.lib.substring 0 5 src.rev)
+        ];
       doCheck = false;
       editedCabalFile = null;
     }
