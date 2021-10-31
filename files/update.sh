@@ -28,18 +28,24 @@ download_github() {
 	sed '/^#/d' > /tmp/chnroutes2.txt
 }
 
+# merge_ips() {
+#     iprange --optimize /tmp/apnic.txt /tmp/chnroutes2.txt > /tmp/cnip.txt
+#     echo "Merge completed. total records: '$(wc -l /tmp/cnip.txt)'"
+# }
+
 merge_ips() {
-    iprange --optimize /tmp/apnic.txt /tmp/chnroutes2.txt > /tmp/cnip.txt
+    iprange --optimize /tmp/apnic.txt > /tmp/cnip.txt
     echo "Merge completed. total records: '$(wc -l /tmp/cnip.txt)'"
 }
+
 
 
 # main
 if ! [ -e /tmp/apnic.txt ]; then
     download_apnic
 fi
-if ! [ -e /tmp/chnroutes2.txt ]; then
-    download_github
-fi
+# if ! [ -e /tmp/chnroutes2.txt ]; then
+#     download_github
+# fi
 merge_ips
 update_list
