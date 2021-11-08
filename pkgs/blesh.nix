@@ -4,9 +4,9 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "akinomyoga";
     repo = "ble.sh";
-    rev = "26aaf8759c1aa3e47f405e820dc07684c9ec71e1";
-    # date = 2021-10-05T07:45:56+09:00;
-    sha256 = "0bwvvr7fk7fqmg4k5r6n122ld3qahi2nvz69vyxb5r5mqq7aby4i";
+    rev = "2243e9117d2e7adad11b69d5ca04f2b2376c70b6";
+    # date = 2021-10-30T18:26:47+09:00;
+    sha256 = "16ys9s6syyifyxqhma656hr2xjd1rrp6h2rjfg93jhp521zanj1d";
     fetchSubmodules = true;
   };
 

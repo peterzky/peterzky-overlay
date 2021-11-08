@@ -5,9 +5,9 @@ stdenv.mkDerivation {
 
   src = fetchgit {
     url = "https://gitlab.com/khumba/nvd.git";
-    rev = "7cdaa6d818119bd7a51930d990fded5d594c6623";
-    # date = 2021-04-10T18:44:27-07:00;
-    sha256 = "0z8m48hq27mx2gm9s7p5ii79wp5asabgc67q8s90y6jirfh1y1vm";
+    rev = "fd059e5b2ef64c27f4062d5438225ac0ebb8e193";
+    # date = 2021-07-20T03:57:51+00:00;
+    sha256 = "0hr739yszm0lcp76c5jhmas2ix5j1an51baf69nixb2m3dcdp1i7";
   };
 
   buildInputs = [ python3 ];
