@@ -5,9 +5,9 @@ let
       src = prev.fetchFromGitHub {
         owner = "xmonad";
         repo = "xmonad";
-        rev = "e1daf46c751338db551e107cd2a1bdeec9c39dee";
-        # date = 2021-10-29T12:24:30+01:00;
-        sha256 = "02mpj8nalrwazx2ykdw294qxnk501rakjnvy6q3mp1g9izca1spc";
+        rev = "a902fefaf1f27f1a21dc35ece15e7dbb573f3d95";
+        # date = 2021-11-04T11:05:14+00:00;
+        sha256 = "1lgcx79pwi5g13la8d7sbznvksvswljpqzk1zx1si5j7dvwqh8f8";
       };
       version = prev.lib.concatStrings
         [
@@ -24,9 +24,9 @@ let
       src = prev.fetchFromGitHub {
         owner = "xmonad";
         repo = "xmonad-contrib";
-        rev = "f6bcf094e122eff0629d315c4fd511c150d839f6";
-        # date = 2021-10-30T22:27:09+02:00;
-        sha256 = "0y8k4msa45xl084x8ln2sahj2m548d082qawq89drx0c45pg3qmc";
+        rev = "42dec50c17712476bde02042a3249e143f458ce2";
+        # date = 2021-11-08T11:46:05+01:00;
+        sha256 = "082sfbxx8671p2rswvdwfi46zf8v8359zchacr9q7cw30k9bjwms";
       };
       version = prev.lib.concatStrings
         [

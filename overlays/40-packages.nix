@@ -9,6 +9,20 @@ final: prev:
   mycnip =
     prev.writeText "cnip.txt" (builtins.readFile ../files/cnip.txt);
 
+  x11docker = prev.x11docker.overrideAttrs (
+    _: rec {
+      version = "master";
+      src = prev.fetchFromGitHub {
+        owner = "mviereck";
+        repo = "x11docker";
+        rev = "3bc44d353c9dd5d6d6c57a2af7a2567a6fae53e6";
+        # date = 2021-10-16T19:28:11+02:00;
+        sha256 = "sha256-cPCtxfLzg1RDh3vKFfxAkcCMytu0mDsGp9CLJQmXATA=";
+      };
+    }
+  );
+
+
   labelimg-git = prev.labelImg.overrideAttrs (
     oldAttrs: rec {
       version = "git";
