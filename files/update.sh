@@ -22,14 +22,19 @@ download_apnic() {
     echo "Apnic download completed"
 }
 
-download_github() {
-    echo "Downloading China IPs from Github misakaio/chnroutes2"
-    curl -Ls https://github.com/misakaio/chnroutes2/raw/master/chnroutes.txt | \
-	sed '/^#/d' > /tmp/chnroutes2.txt
-}
+# download_github() {
+#     echo "Downloading China IPs from Github misakaio/chnroutes2"
+#     curl -Ls https://github.com/misakaio/chnroutes2/raw/master/chnroutes.txt | \
+# 	sed '/^#/d' > /tmp/chnroutes2.txt
+# }
+
+# merge_ips() {
+#     iprange --optimize /tmp/apnic.txt /tmp/chnroutes2.txt > /tmp/cnip.txt
+#     echo "Merge completed. total records: '$(wc -l /tmp/cnip.txt)'"
+# }
 
 merge_ips() {
-    iprange --optimize /tmp/apnic.txt /tmp/chnroutes2.txt > /tmp/cnip.txt
+    iprange --optimize /tmp/apnic.txt > /tmp/cnip.txt
     echo "Merge completed. total records: '$(wc -l /tmp/cnip.txt)'"
 }
 
@@ -37,8 +42,8 @@ merge_ips() {
 if ! [ -e /tmp/apnic.txt ]; then
     download_apnic
 fi
-if ! [ -e /tmp/chnroutes2.txt ]; then
-    download_github
-fi
+# if ! [ -e /tmp/chnroutes2.txt ]; then
+#     download_github
+# fi
 merge_ips
 update_list
