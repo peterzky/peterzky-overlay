@@ -1,7 +1,7 @@
 final: prev:
 {
 
-  leftwm-git = prev.callPackage ../pkgs/leftwm-git.nix { };
+  # leftwm-git = prev.callPackage ../pkgs/leftwm-git.nix { };
 
   blesh = prev.callPackage ../pkgs/blesh.nix { };
 
@@ -15,26 +15,26 @@ final: prev:
       src = prev.fetchFromGitHub {
         owner = "mviereck";
         repo = "x11docker";
-        rev = "3bc44d353c9dd5d6d6c57a2af7a2567a6fae53e6";
-        # date = 2021-10-16T19:28:11+02:00;
-        sha256 = "sha256-cPCtxfLzg1RDh3vKFfxAkcCMytu0mDsGp9CLJQmXATA=";
+        rev = "b8482640866e495bfe4e03f3c2a3b5b88ea911f8";
+        # date = 2021-12-01T12:02:55+01:00;
+        sha256 = "1jal0yccvaa9i7vzbsl5h7jxhb3l28zpyy8mjddifzy4d36nxpzg";
       };
     }
   );
 
 
-  labelimg-git = prev.labelImg.overrideAttrs (
-    oldAttrs: rec {
-      version = "git";
-      src = prev.fetchFromGitHub {
-        owner = "peterzky";
-        repo = "labelImg";
-        rev = "b44448acbb8b88a45e809918cea59e62d63d5eab";
-        sha256 = "07inxdyrhrg4c5dfa0q78vxh652q32jm66h1y90lnq6cj0567gv8";
-        # date = 2021-10-04T14:26:57+08:00;
-      };
-    }
-  );
+  # labelimg-git = prev.labelImg.overrideAttrs (
+  #   oldAttrs: rec {
+  #     version = "git";
+  #     src = prev.fetchFromGitHub {
+  #       owner = "peterzky";
+  #       repo = "labelImg";
+  #       rev = "b44448acbb8b88a45e809918cea59e62d63d5eab";
+  #       sha256 = "07inxdyrhrg4c5dfa0q78vxh652q32jm66h1y90lnq6cj0567gv8";
+  #       # date = 2021-10-04T14:26:57+08:00;
+  #     };
+  #   }
+  # );
 
 
   # packages
@@ -58,9 +58,9 @@ final: prev:
   };
 
 
-  v2ray = prev.callPackage ../pkgs/go/v2ray { };
+  # v2ray = prev.callPackage ../pkgs/go/v2ray { };
 
-  # gfw-white-list = prev.callPackage ../pkgs/gfw-white-list {};
+  gfw-white-list = prev.callPackage ../pkgs/gfw-white-list {};
 
   san-francisco-font = prev.callPackage ../pkgs/san-francisco-font.nix { };
 
