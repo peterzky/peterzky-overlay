@@ -1,6 +1,10 @@
 final: prev:
 {
-  sws = prev.callPackage ../pkgs/shell-script/sws { };
+  # sws = prev.callPackage ../pkgs/shell-script/sws { };
+
+  # lf-pv = prev.callPackage ../pkgs/shell-script/lf-pv.nix {};
+
+  # lsix = prev.callPackage ../pkgs/shell-script/lsix.nix {};
 
   audio-switch-menu = prev.callPackage ../pkgs/shell-script/audio-switch-menu.nix { };
 
@@ -8,9 +12,6 @@ final: prev:
 
   volume-ctl = prev.callPackage ../pkgs/shell-script/volume-ctl.nix { };
 
-  # lf-pv = prev.callPackage ../pkgs/shell-script/lf-pv.nix {};
-
-  # lsix = prev.callPackage ../pkgs/shell-script/lsix.nix {};
   tts = prev.writeScriptBin "tts" ''
     ${prev.python3Packages.gtts}/bin/gtts-cli "$(${prev.wl-clipboard}/bin/wl-paste -p -n)" | mpv --speed=1.2 -
   '';
@@ -36,8 +37,5 @@ final: prev:
     ${prev.glib}/bin/gsettings set "$gnome_schema" cursor-theme "$cursor_theme"
     ${prev.glib}/bin/gsettings set "$gnome_schema" font-name "$font_name"
   '';
-
-  nvidia-mgr = prev.writeScriptBin "nvidia-mgr"
-    (builtins.readFile ../files/nvidia.sh);
 
 }

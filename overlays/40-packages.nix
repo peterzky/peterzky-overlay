@@ -1,12 +1,13 @@
 final: prev:
 {
 
-  # leftwm-git = prev.callPackage ../pkgs/leftwm-git.nix { };
+  leftwm-git = prev.callPackage ../pkgs/leftwm { };
+
   steam = prev.steam.override {
     nativeOnly = true;
   };
 
-  blesh = prev.callPackage ../pkgs/blesh.nix { };
+  blesh = prev.callPackage ../pkgs/blesh { };
 
   # files
   mycnip =
@@ -54,8 +55,6 @@ final: prev:
   #   }
   # );
 
-  nvd = prev.callPackage ../pkgs/nvd { };
-
   interception-tools-plugins = prev.interception-tools-plugins // {
     space2meta = prev.callPackage ../pkgs/space2meta { };
   };
@@ -63,11 +62,10 @@ final: prev:
 
   # v2ray = prev.callPackage ../pkgs/go/v2ray { };
 
-  gfw-white-list = prev.callPackage ../pkgs/gfw-white-list {};
+  gfw-white-list = prev.callPackage ../pkgs/gfw-white-list { };
 
-  san-francisco-font = prev.callPackage ../pkgs/san-francisco-font.nix { };
 
-  sdcv-dict = prev.callPackage ../pkgs/sdcv-dict.nix { };
+  sdcv-dict = prev.callPackage ../pkgs/sdcv-dict { };
 
   # Suckless Tools
   # st = prev.st.overrideAttrs (

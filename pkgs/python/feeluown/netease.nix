@@ -22,7 +22,6 @@ buildPythonPackage {
   '';
 
   propagatedBuildInputs = [
-    # feeluown
     beautifulsoup4
     pycryptodome
     marshmallow

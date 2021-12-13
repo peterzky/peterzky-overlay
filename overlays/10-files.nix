@@ -5,9 +5,9 @@ final: prev: {
     src = prev.fetchFromGitHub {
       owner = "NixOS";
       repo = "flake-registry";
-      rev = "846277a41f292c63d7c2a4bed07152d982829bcb";
-      # date = 2021-03-01T11:53:21+01:00;
-      sha256 = "0bmn66lwzh7cdhhw9bzbj0snmrgh431jd06aynkm5kdrrbwsq6qm";
+      rev = "142683660d8efac51d97b534a8bdedb5a9af1719";
+      # date = 2021-12-10T15:42:29+01:00;
+      sha256 = "17kc20iklday1s5rmmddgicasqhqs1n3z7939605fw0p5988zk49";
     };
     dontBuild = true;
     installPhase = ''
