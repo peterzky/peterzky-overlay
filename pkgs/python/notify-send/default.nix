@@ -1,6 +1,10 @@
-{ python3Packages, fetchFromGitHub, lib }:
-with python3Packages;
-buildPythonApplication rec {
+{ buildPythonPackage
+, lib
+, fetchFromGitHub
+, dbus-python
+, pygobject3
+}:
+buildPythonPackage rec {
   pname = "notify-send.py";
   version = lib.substring 0 5 src.rev;
 

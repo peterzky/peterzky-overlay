@@ -2,6 +2,9 @@ final: prev:
 {
 
   # leftwm-git = prev.callPackage ../pkgs/leftwm-git.nix { };
+  steam = prev.steam.override {
+    nativeOnly = true;
+  };
 
   blesh = prev.callPackage ../pkgs/blesh.nix { };
 
