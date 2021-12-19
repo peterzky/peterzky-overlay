@@ -14,7 +14,7 @@ let
       fuo = _callPackage ../pkgs/python/feeluown/base.nix {
         mpv = prev.mpv;
         wrapQtAppsHook = prev.qt5.wrapQtAppsHook;
-        extensions = [ fuo-netease fuo-local ];
+        extensions = [ fuo-netease fuo-local fuo-qqmusic ];
       };
 
       notify-send-py = _callPackage ../pkgs/python/notify-send { };
@@ -22,6 +22,8 @@ let
       fuo-netease = _callPackage ../pkgs/python/feeluown/netease.nix { };
 
       fuo-local = _callPackage ../pkgs/python/feeluown/local.nix { };
+
+      fuo-qqmusic = _callPackage ../pkgs/python/feeluown/qqmusic.nix { };
 
     };
 

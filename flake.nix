@@ -27,5 +27,11 @@
       ) // {
         nixosModules = import ./modules;
         inherit overlay;
+        templates = {
+          pyqt = {
+            path = ./templates/pyqt;
+            description = "nix pyqt flake";
+          };
+        };
       };
 }
