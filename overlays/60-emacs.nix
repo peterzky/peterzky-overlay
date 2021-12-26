@@ -9,6 +9,13 @@ let
       tree-sitter-langs = _callPackage ../pkgs/emacs/tree-sitter-langs { };
 
       tsc = _callPackage ../pkgs/emacs/tsc { };
+
+      # eglot use lisp library with emacs
+      eglot = epkgs.eglot.override {
+        xref = null;
+        project = null;
+        flymake = null;
+      };
     };
 in
 {
