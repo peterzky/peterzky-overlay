@@ -32,6 +32,10 @@
             path = ./templates/pyqt;
             description = "nix pyqt flake";
           };
+          meson = {
+            path = ./templates/meson;
+            description = "cpp meson falke";
+          };
         };
       };
 }
