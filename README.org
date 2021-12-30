@@ -2,4 +2,8 @@
 this is an overlay for nixpkgs, and nix flake.
 
 * Packages
- ...
+* Templates
+#+begin_src bash
+# meson cpp project
+nix flake init -t github:peterzky/peterzky-overlay#meson
+#+end_src

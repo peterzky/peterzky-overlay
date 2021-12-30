@@ -1,30 +1,26 @@
 {
   description = "nix flake pyqt";
 
-  outputs = { self, nixpkgs }: {
-
-    packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-    defaultPackage.x86_64-linux = self.packages.x86_64-linux.hello;
-
-    devShell.x86_64-linux =
-      let
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        python-deps = pkgs.python3.withPackages (ps: with ps;
-        [
-          pyside2
-          python-lsp-server
-
-        ]);
-        qt-deps = pkgs.qt5.env "qt5" (with pkgs.qt5; [ qtwayland qttools ]);
-      in
-      pkgs.mkShell {
-        name = "qt-playground";
-        buildInputs = [
-          python-deps
-          qt-deps
-        ];
-      };
-
+  inputs = {
+    nixpkgs.url = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable/nixexprs.tar.xz";
+    utils.url = "github:numtide/flake-utils";
   };
+
+  outputs = { self, nixpkgs, utils }:
+    utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      rec {
+        packages = {
+          # pyqt_app = pkgs.callPackage ./default.nix { };
+          pyqt_app = pkgs.hello;
+        };
+        defaultPackage = packages.pyqt_app;
+
+        devShell = pkgs.callPackage ./shell { };
+      }
+
+    );
+
 }
