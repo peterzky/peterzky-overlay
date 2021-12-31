@@ -24,12 +24,12 @@
         in
         rec {
           packages = flake-utils.lib.flattenTree pkgs_full.peterPkgs;
+          templates = with pkgs;
+            lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
+              (name: { path = ./templates + "/${name}"; description = ""; });
+          nixosModules = import ./modules;
+          inherit overlay;
+
         }
-      ) // {
-      nixosModules = import ./modules;
-      inherit overlay;
-      templates = with pkgs;
-        lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
-          (name: { path = ./templates + "/${name}"; description = ""; });
-    };
+      ) // { };
 }
