@@ -10,32 +10,26 @@
     let
       overlay = import ./overlay.nix;
     in
-      flake-utils.lib.eachDefaultSystem (
+    flake-utils.lib.eachDefaultSystem
+      (
         system:
-          let
-            pkgs = import nixpkgs { inherit system; };
-            pkgs_full = import nixpkgs {
-              inherit system;
-              overlays = [ overlay ];
-              config.allowUnfree = true;
-            };
+        let
+          pkgs = import nixpkgs { inherit system; };
+          pkgs_full = import nixpkgs {
+            inherit system;
+            overlays = [ overlay ];
+            config.allowUnfree = true;
+          };
 
-          in
-            rec {
-              packages = flake-utils.lib.flattenTree pkgs_full.peterPkgs;
-            }
+        in
+        rec {
+          packages = flake-utils.lib.flattenTree pkgs_full.peterPkgs;
+        }
       ) // {
-        nixosModules = import ./modules;
-        inherit overlay;
-        templates = {
-          pyqt = {
-            path = ./templates/pyqt;
-            description = "nix pyqt flake";
-          };
-          meson = {
-            path = ./templates/meson;
-            description = "cpp meson falke";
-          };
-        };
-      };
+      nixosModules = import ./modules;
+      inherit overlay;
+      templates = with pkgs;
+        lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
+          (name: { path = ./templates + "/${name}"; description = ""; });
+    };
 }

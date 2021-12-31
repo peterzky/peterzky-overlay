@@ -18,7 +18,7 @@
         };
         defaultPackage = packages.pyqt_app;
 
-        devShell = pkgs.callPackage ./shell { };
+        devShell = pkgs.callPackage ./shell.nix { };
       }
 
     );
