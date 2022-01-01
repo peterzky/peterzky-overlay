@@ -5,11 +5,11 @@
   description = "My awesome Rust project";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable/nixexprs.tar.xz";
     utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crate2nix = {
-      url = "github:kolloch/crate2nix";
+      url = "github:kolloch/crate2nix/0.10.0";
       flake = false;
     };
     flake-compat = {

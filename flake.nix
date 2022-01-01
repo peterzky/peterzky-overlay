@@ -31,7 +31,9 @@
       templates = with nixpkgs;
         lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
           (name: { path = ./templates + "/${name}"; description = ""; });
+
       nixosModules = import ./modules;
+
       inherit overlay;
     };
 }
