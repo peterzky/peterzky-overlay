@@ -82,6 +82,7 @@
           # `nix develop`
           devShell = pkgs.mkShell
             {
+              name = "rust-dev";
               inputsFrom = builtins.attrValues self.packages.${system};
               buildInputs = buildInputs ++ (with pkgs;
                 # Tools you need for development go here.
