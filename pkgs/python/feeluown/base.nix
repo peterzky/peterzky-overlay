@@ -30,9 +30,9 @@ buildPythonPackage {
   src = fetchFromGitHub {
     owner = "feeluown";
     repo = "FeelUOwn";
-    rev = "2418d511a3cdc3fdef179b23cfa8578915b30da3";
-    # date = 2021-12-17T09:59:30+08:00;
-    sha256 = "0imxhm2dxldqpmrrpjb6bjbjbqd45c4gmhv69d113b5k09qdj914";
+    rev = "be0c8cf4c5ac820e38fd47cef33f861ffbf89971";
+    # date = 2022-01-05T20:03:48+08:00;
+    sha256 = "0sgfzajcn6va7hd4gfbvzr9d3jaxf6xf0mgcdh65cddmgq85h14j";
   };
 
   nativeBuildInputs = [
