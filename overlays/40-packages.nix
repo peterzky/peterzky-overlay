@@ -3,8 +3,24 @@ final: prev:
 
   leftwm-git = prev.callPackage ../pkgs/leftwm { };
 
-  steam = prev.steam.override {
-    nativeOnly = true;
+  sway-unwrapped = (prev.sway-unwrapped.overrideAttrs (
+    old: rec {
+      version = "1.7-rc2";
+      src = prev.fetchFromGitHub {
+        owner = "swaywm";
+        repo = "sway";
+        rev = "1.7-rc2";
+        sha256 = "sha256-7xaAUENlBr+1RbcsH/rjamjjTR6eCYt7iOAnCSDmgbI==";
+      };
+      patches = builtins.filter
+        (p: !builtins.elem p [
+          ./load-configuration-from-etc.patch
+        ])
+        old.patches;
+    }
+  )).override {
+    wlroots = prev.wlroots_0_15;
+    meson = prev.meson_0_60;
   };
 
   blesh = prev.callPackage ../pkgs/blesh { };
@@ -19,9 +35,9 @@ final: prev:
       src = prev.fetchFromGitHub {
         owner = "mviereck";
         repo = "x11docker";
-        rev = "b8482640866e495bfe4e03f3c2a3b5b88ea911f8";
-        # date = 2021-12-01T12:02:55+01:00;
-        sha256 = "1jal0yccvaa9i7vzbsl5h7jxhb3l28zpyy8mjddifzy4d36nxpzg";
+        rev = "d83173e6048f61263f8c67cd7d4b18763c4ca421";
+        # date = 2022-01-08T11:16:17+01:00;
+        sha256 = "0g8h7pzap9qfivivc5165ybmyy8ky6mfsxfrnzbvqlbcrys19c6i";
       };
     }
   );
