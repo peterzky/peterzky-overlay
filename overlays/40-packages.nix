@@ -5,12 +5,12 @@ final: prev:
 
   sway-unwrapped = (prev.sway-unwrapped.overrideAttrs (
     old: rec {
-      version = "1.7-rc2";
+      version = "1.7-rc3";
       src = prev.fetchFromGitHub {
         owner = "swaywm";
         repo = "sway";
-        rev = "1.7-rc2";
-        sha256 = "sha256-7xaAUENlBr+1RbcsH/rjamjjTR6eCYt7iOAnCSDmgbI==";
+        rev = "1.7-rc3";
+        sha256 = "sha256-kRVWwu6q9PqmXoYO2xrVRYwLaPGVy8CCzR0a9DeFJ8c=";
       };
       patches = builtins.filter
         (p: !builtins.elem p [
