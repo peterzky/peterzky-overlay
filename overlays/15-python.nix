@@ -7,10 +7,6 @@ let
       });
     in
     rec {
-      i3-wk-switch = _callPackage ../pkgs/python/i3-wk-switch { };
-
-      i3-quickterm = _callPackage ../pkgs/python/i3-quickterm { };
-
       fuo = _callPackage ../pkgs/python/feeluown/base.nix {
         mpv = prev.mpv;
         wrapQtAppsHook = prev.qt5.wrapQtAppsHook;

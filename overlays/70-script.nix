@@ -1,10 +1,5 @@
 final: prev:
 {
-  # sws = prev.callPackage ../pkgs/shell-script/sws { };
-
-  # lf-pv = prev.callPackage ../pkgs/shell-script/lf-pv.nix {};
-
-  # lsix = prev.callPackage ../pkgs/shell-script/lsix.nix {};
 
   audio-switch-menu = prev.callPackage ../pkgs/shell-script/audio-switch-menu.nix { };
 

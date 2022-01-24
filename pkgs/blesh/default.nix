@@ -2,11 +2,7 @@
 stdenv.mkDerivation {
   name = "blesh";
   src = fetchFromGitHub {
-    owner = "akinomyoga";
-    repo = "ble.sh";
-    rev = "2243e9117d2e7adad11b69d5ca04f2b2376c70b6";
-    # date = 2021-10-30T18:26:47+09:00;
-    sha256 = "16ys9s6syyifyxqhma656hr2xjd1rrp6h2rjfg93jhp521zanj1d";
+    inherit (lib.importJSON ./version.json) owner repo rev sha256;
     fetchSubmodules = true;
   };
 

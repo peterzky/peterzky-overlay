@@ -20,11 +20,7 @@ mkDerivation rec {
   version = "0.6.999";
 
   src = fetchFromGitHub {
-    owner = "zealdocs";
-    repo = "zeal";
-    rev = "dbb8eb29db1476a7b117d96e047867577ff73261";
-    sha256 = "05l3g742jahgvz1c760n6xxckhcb8l54zlc6sm7bh8f90fhd8iqw";
-    # date = 2021-07-18T20:39:34-04:00;
+    inherit (lib.importJSON ./version.json) owner repo rev sha256;
   };
 
   # we only need this if we are using a version that hasn't been released. We

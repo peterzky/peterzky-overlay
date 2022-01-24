@@ -8,6 +8,7 @@
 , pyqt5
 , mpv
 , wrapQtAppsHook
+, lib
 , extensions ? [ ]
 }:
 let
@@ -28,11 +29,7 @@ buildPythonPackage {
   pname = "feeluown";
   version = "git";
   src = fetchFromGitHub {
-    owner = "feeluown";
-    repo = "FeelUOwn";
-    rev = "be0c8cf4c5ac820e38fd47cef33f861ffbf89971";
-    # date = 2022-01-05T20:03:48+08:00;
-    sha256 = "0sgfzajcn6va7hd4gfbvzr9d3jaxf6xf0mgcdh65cddmgq85h14j";
+    inherit (lib.importJSON ./base.json) owner repo rev sha256;
   };
 
   nativeBuildInputs = [

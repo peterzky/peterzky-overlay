@@ -7,10 +7,7 @@ final: prev:
     old: rec {
       version = "1.7";
       src = prev.fetchFromGitHub {
-        owner = "swaywm";
-        repo = "sway";
-        rev = "1.7";
-        sha256 = "sha256-tHgw/NBQVnYmKuAp2C+Srrug3on3NE5BE87ThYqgQ2s=";
+        inherit (prev.lib.importJSON ../meta/sway.json) owner repo rev sha256;
       };
       patches = builtins.filter
         (p: !builtins.elem p [
@@ -20,7 +17,6 @@ final: prev:
     }
   )).override {
     wlroots = prev.wlroots_0_15;
-    meson = prev.meson_0_60;
   };
 
   blesh = prev.callPackage ../pkgs/blesh { };

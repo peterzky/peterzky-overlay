@@ -9,14 +9,12 @@ rustPlatform.buildRustPackage rec {
   version = builtins.substring 0 6 src.rev;
 
   src = fetchFromGitHub {
-    owner = "leftwm";
-    repo = "leftwm";
-    rev = "b4a06860ee5715ce89bc882012e2406a70c7795b";
-    sha256 = "0hv1yw4csnbsbq10fs9v04vfka2j8dh3yjg93sj7gwxxciryfgby";
-    # date = 2021-10-07T08:14:10-05:00;
+    inherit (lib.importJSON ./version.json) owner repo rev sha256;
   };
 
-  cargoHash = "sha256-gFiKtIDIyvMWK0GuFd6guvGa+a23zcqafEuzdljqk+k=";
+  # cargoHash = "sha256-gFiKtIDIyvMWK0GuFd6guvGa+a23zcqafEuzdljqk+k=";
+  cargoHash = lib.fakeHash;
+  # update correct hash above
 
   buildInputs = rpathLibs;
 
