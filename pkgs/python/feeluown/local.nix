@@ -10,7 +10,7 @@ buildPythonPackage {
   pname = "fuo_local";
   version = "0.2.1";
   src = fetchFromGitHub {
-    inherit (lib.importJSON ./localjson) owner repo rev sha256;
+    inherit (lib.importJSON ./local.json) owner repo rev sha256;
   };
 
   patchPhase = ''

@@ -7,7 +7,11 @@ final: prev:
     old: rec {
       version = "1.7";
       src = prev.fetchFromGitHub {
-        inherit (prev.lib.importJSON ../meta/sway.json) owner repo rev sha256;
+        # inherit (prev.lib.importJSON ../meta/sway.json) owner repo rev sha256;
+        owner = "swaywm";
+        repo = "sway";
+        rev = "1.7";
+        sha256 = "sha256-tHgw/NBQVnYmKuAp2C+Srrug3on3NE5BE87ThYqgQ2s=";
       };
       patches = builtins.filter
         (p: !builtins.elem p [

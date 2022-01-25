@@ -1,6 +1,6 @@
 {
-    "owner" : "xmonad",
-    "repo" : "xmonad",
-    "rev" : "e25d090112f2a76364a10b88a729b8586c18145b",
-    "sha256" : "01ljj4brzb4wxmhrlgvfm8d67k6avl1hq9l8qjm50l4hgjks3ijd"
+  "owner":"xmonad",
+  "repo":"xmonad",
+  "rev":"eee0a0dc39fac5eaa0f42133ae2aa816b6232389",
+  "sha256":"0fg6saaby2c6as5ifslspgs13lxckr7jsc8yn49g5w5fvsfj3va8"
 }

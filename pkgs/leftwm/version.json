@@ -1,6 +1,6 @@
 {
-    "owner" : "leftwm",
-    "repo" : "leftwm",
-    "rev" : "b4a06860ee5715ce89bc882012e2406a70c7795b",
-    "sha256" : "0hv1yw4csnbsbq10fs9v04vfka2j8dh3yjg93sj7gwxxciryfgby"
+  "owner":"leftwm",
+  "repo":"leftwm",
+  "rev":"52e340bbc3368bf3a894542591af66bc56f8736d",
+  "sha256":"1gijghw3gg7wr6vsgw4gw4awvbvfdpamz1b7avak8f8n1ia4sk1f"
 }
