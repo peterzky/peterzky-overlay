@@ -13,8 +13,6 @@ let
         extensions = [ fuo-netease fuo-local fuo-qqmusic ];
       };
 
-      notify-send-py = _callPackage ../pkgs/python/notify-send { };
-
       fuo-netease = _callPackage ../pkgs/python/feeluown/netease.nix { };
 
       fuo-local = _callPackage ../pkgs/python/feeluown/local.nix { };
