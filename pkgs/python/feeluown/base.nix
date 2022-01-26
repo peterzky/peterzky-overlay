@@ -50,8 +50,7 @@ buildPythonPackage {
 
   postFixup = ''
     for f in $out/bin/fuo $out/bin/feeluown; do
-      wrapProgram "$f" \
-        --prefix MPV_DYLIB_PATH : "${mpv}/lib/libmpv.so"
+      wrapQtApp "$f" --prefix MPV_DYLIB_PATH : "${mpv}/lib/libmpv.so"
     done;
   '';
 

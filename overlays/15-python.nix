@@ -28,5 +28,5 @@ rec {
       [ myOverrides ];
   };
 
-  feeluown = python3.pkgs.fuo;
+  feeluown = python3.pkgs.toPythonApplication python3.pkgs.fuo;
 }
