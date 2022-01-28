@@ -1,8 +1,6 @@
 final: prev:
 {
 
-  leftwm-git = prev.callPackage ../pkgs/leftwm { };
-
   sway-unwrapped = (prev.sway-unwrapped.overrideAttrs (
     old: rec {
       version = "1.7";
@@ -26,6 +24,8 @@ final: prev:
   blesh = prev.callPackage ../pkgs/blesh { };
 
   cnip = prev.callPackage ../pkgs/cnip { };
+
+  flake-updater = prev.callPackage ../pkgs/flake-updater { };
 
   interception-tools-plugins = prev.interception-tools-plugins // {
     space2meta = prev.callPackage ../pkgs/space2meta { };
