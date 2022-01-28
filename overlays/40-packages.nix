@@ -25,10 +25,7 @@ final: prev:
 
   blesh = prev.callPackage ../pkgs/blesh { };
 
-  # files
-  mycnip =
-    prev.writeText "cnip.txt" (builtins.readFile ../files/cnip.txt);
-
+  cnip = prev.callPackage ../pkgs/cnip { };
 
   interception-tools-plugins = prev.interception-tools-plugins // {
     space2meta = prev.callPackage ../pkgs/space2meta { };
@@ -37,5 +34,7 @@ final: prev:
   gfw-white-list = prev.callPackage ../pkgs/gfw-white-list { };
 
   sdcv-dict = prev.callPackage ../pkgs/sdcv-dict { };
+
+  udp2raw = prev.callPackage ../pkgs/udp2raw { };
 
 }
