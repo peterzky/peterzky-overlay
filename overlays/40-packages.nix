@@ -29,6 +29,7 @@ final: prev:
 
   interception-tools-plugins = prev.interception-tools-plugins // {
     space2meta = prev.callPackage ../pkgs/space2meta { };
+    cap2ctl = prev.callPackage ../pkgs/cap2ctl { };
   };
 
   gfw-white-list = prev.callPackage ../pkgs/gfw-white-list { };
