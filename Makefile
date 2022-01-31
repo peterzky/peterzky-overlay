@@ -1,8 +1,8 @@
-UPDATE_DIRS = files pkgs/gfw-white-list
 
-.PHONY: update $(UPDATE_DIRS)
+.PHONY: update update-flake
 
-update: $(UPDATE_DIRS)
+update-flake:
+	nix flake update
 
-$(UPDATE_DIRS):
-	$(MAKE) -C $@
+update: update-flake
+	nix run .#flake-updater -- .
