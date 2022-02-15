@@ -1,5 +1,17 @@
 final: prev:
 {
+  # pin x11 docker
+  x11docker = prev.x11docker.overrideAttrs (
+    _: rec {
+      version = "6.10.0";
+      src = prev.fetchFromGitHub {
+        owner = "mviereck";
+        repo = "x11docker";
+        rev = "v${version}";
+        sha256 = "sha256-cPCtxfLzg1RDh3vKFfxAkcCMytu0mDsGp9CLJQmXATA=";
+      };
+    }
+  );
 
   sway-unwrapped = (prev.sway-unwrapped.overrideAttrs (
     old: rec {
