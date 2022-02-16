@@ -13,13 +13,25 @@
   outputs = { self, nixpkgs, utils }:
     utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        # override packages in overlay
+        overlay = final: prev: { };
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [ overlay ];
+        };
       in
       rec {
         packages = {
-          hello = pkgs.callPackage ./default.nix { };
+          example_cpp_meson = pkgs.callPackage ./default.nix { };
         };
-        defaultPackage = packages.hello;
+        defaultPackage = packages.example_cpp_meson;
+
+        devShell = pkgs.mkShell {
+          name = "example_cpp_meson";
+          inputsFrom = [ packages.example_cpp_meson ];
+        };
+
       }
 
     );
