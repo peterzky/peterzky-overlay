@@ -7,33 +7,26 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    let
-      overlay = import ./overlay.nix;
-    in
     flake-utils.lib.eachDefaultSystem
-      (
-        system:
+      (system:
         let
-          pkgs = import nixpkgs { inherit system; };
-          pkgs_full = import nixpkgs {
+          pkgs = import nixpkgs {
             inherit system;
-            overlays = [ overlay ];
+            overlays = [ (import ./default.nix) ];
             config.allowUnfree = true;
           };
-
         in
-        rec {
-          packages = flake-utils.lib.flattenTree pkgs_full.peterPkgs;
+        rec
+        {
+          packages = pkgs;
+          templates = with pkgs;
+            lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
+              (name: { path = ./templates + "/${name}"; description = ""; });
 
+          nixosModules = import ./modules;
 
         }
       ) // {
-      templates = with nixpkgs;
-        lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
-          (name: { path = ./templates + "/${name}"; description = ""; });
-
-      nixosModules = import ./modules;
-
-      inherit overlay;
+      overlay = import ./default.nix;
     };
 }
