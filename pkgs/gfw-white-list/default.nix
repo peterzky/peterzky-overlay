@@ -5,12 +5,12 @@ stdenv.mkDerivation rec {
     inherit (lib.importJSON ./version.json) owner repo rev sha256;
   };
   buildPhase = ''
-    make SERVER=119.29.29.29 unbound
+    make SERVER=119.29.29.29 dnsmasq
   '';
   installPhase = ''
-    install -m644 -D accelerated-domains.china.unbound.conf $out/accelerated-domains.china.unbound.conf
-    install -m644 -D apple.china.unbound.conf $out/apple.china.unbound.conf
-    install -m644 -D google.china.unbound.conf $out/google.china.unbound.conf
+    install -m644 -D accelerated-domains.china.dnsmasq.conf $out/accelerated-domains.china.dnsmasq.conf
+    install -m644 -D apple.china.dnsmasq.conf $out/apple.china.dnsmasq.conf
+    install -m644 -D google.china.dnsmasq.conf $out/google.china.dnsmasq.conf
   '';
 
 }

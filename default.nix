@@ -5,11 +5,9 @@ let
   path = ./overlays;
   overlays = map (n: import (path + ("/" + n))) (
     filter
-      (
-        n:
+      (n:
         match ".*\\.nix" n != null
-        || pathExists (path + ("/" + n + "/default.nix"))
-      )
+        || pathExists (path + ("/" + n + "/default.nix")))
       (attrNames (readDir path))
   );
 in
