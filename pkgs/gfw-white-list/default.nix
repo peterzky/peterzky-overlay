@@ -1,8 +1,9 @@
-{ stdenv, fetchFromGitHub, lib }:
+{ stdenv, fetchgit, lib }:
 stdenv.mkDerivation rec {
   name = "gfw-white-list";
-  src = fetchFromGitHub {
-    inherit (lib.importJSON ./version.json) owner repo rev sha256;
+  src = fetchgit {
+    url = "https://github.com/felixonmars/dnsmasq-china-list.git";
+    inherit (lib.importJSON ./version.json) rev sha256;
   };
   buildPhase = ''
     make SERVER=119.29.29.29 dnsmasq
