@@ -20,14 +20,15 @@
         rec
         {
           packages = pkgs;
-          templates = with pkgs;
-            lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
-              (name: { path = ./templates + "/${name}"; description = ""; });
+
 
           nixosModules = import ./modules;
 
         }
       ) // {
       overlay = import ./default.nix;
+      templates = with nixpkgs;
+        lib.genAttrs (lib.attrNames (builtins.readDir ./templates))
+          (name: { path = ./templates + "/${name}"; description = ""; });
     };
 }
