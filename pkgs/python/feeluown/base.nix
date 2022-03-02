@@ -1,30 +1,18 @@
 { fetchFromGitHub
 , buildPythonPackage
+, fetchPypi
 , janus
 , requests
 , tomlkit
 , packaging
 , pydantic
+, qasync
 , pyqt5
 , mpv
 , wrapQtAppsHook
 , lib
 , extensions ? [ ]
 }:
-let
-  qasync = buildPythonPackage {
-    pname = "qasync";
-    version = "git";
-    src = fetchFromGitHub {
-      owner = "CabbageDevelopment";
-      repo = "qasync";
-      rev = "bae9d600615e06a32a7ea9e17aebf805e7d8ffe0";
-      # date = 2021-09-15T23:01:26+01:00;
-      sha256 = "1q9cllrwf94whr0f6mipa0hdq1rcyqvklwx19g35g2dav8f3xkjl";
-    };
-    doCheck = false;
-  };
-in
 buildPythonPackage {
   pname = "feeluown";
   version = "git";

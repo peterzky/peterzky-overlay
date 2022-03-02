@@ -1,7 +1,7 @@
 final: prev:
 let
   myOverrides = python-final: python-prev:
-    with prev.python3.pkgs;
+    with final.python3.pkgs;
     rec {
       fuo = callPackage ../pkgs/python/feeluown/base.nix {
         mpv = prev.mpv;
@@ -14,6 +14,10 @@ let
       fuo-local = callPackage ../pkgs/python/feeluown/local.nix { };
 
       fuo-qqmusic = callPackage ../pkgs/python/feeluown/qqmusic.nix { };
+
+      mutagen = callPackage ../pkgs/python/mutagen { };
+
+      qasync = callPackage ../pkgs/python/qasync { };
 
     };
 

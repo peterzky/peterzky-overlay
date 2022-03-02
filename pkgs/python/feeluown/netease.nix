@@ -1,12 +1,13 @@
 { fetchFromGitHub
 , buildPythonPackage
+, fetchPypi
 , beautifulsoup4
 , pycryptodome
 , marshmallow
 , requests
+, mutagen
 , lib
 }:
-
 buildPythonPackage {
   pname = "fuo_netease";
   version = "0.8";
@@ -23,6 +24,7 @@ buildPythonPackage {
     pycryptodome
     marshmallow
     requests
+    mutagen
   ];
 
   doCheck = false;
