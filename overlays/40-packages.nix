@@ -18,4 +18,6 @@ final: prev:
 
   udp2raw = prev.callPackage ../pkgs/udp2raw { };
 
+  gamescope = prev.callPackage ../pkgs/gamescope { };
+
 }
