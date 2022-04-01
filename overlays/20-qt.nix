@@ -1,3 +1,3 @@
 final: prev: {
-  zeal = prev.libsForQt512.callPackage ../pkgs/zeal {};
+  # zeal = prev.libsForQt5.callPackage ../pkgs/zeal {};
 }
