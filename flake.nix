@@ -20,10 +20,7 @@
         rec
         {
           packages = pkgs;
-
-
           nixosModules = import ./modules;
-
         }
       ) // {
       overlay = import ./default.nix;

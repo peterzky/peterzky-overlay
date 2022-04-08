@@ -1,5 +1,6 @@
 final: prev:
 {
+  smartdns = prev.callPackage ../pkgs/smartdns { };
 
   blesh = prev.callPackage ../pkgs/blesh { };
 
