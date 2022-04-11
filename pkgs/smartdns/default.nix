@@ -1,14 +1,13 @@
 { lib, stdenv, fetchFromGitHub, openssl }:
-
+let
+  repo_info = lib.importJSON ./version.json;
+in
 stdenv.mkDerivation rec {
   pname = "smartdns";
-  version = "36";
+  version = lib.substring 0 5 repo_info.rev;
 
   src = fetchFromGitHub {
-    owner = "pymumu";
-    repo = pname;
-    rev = "Release${version}";
-    sha256 = "sha256-sjrRPmTJRCUnMrA08M/VdYhL7/OfQY30/t1loLPSrlQ=";
+    inherit (repo_info) owner repo rev sha256;
   };
 
   buildInputs = [ openssl ];
