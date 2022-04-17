@@ -19,6 +19,8 @@ let
 
       qasync = callPackage ../pkgs/python/qasync { };
 
+      i3-quickterm = callPackage ../pkgs/python/i3-quickterm { };
+
     };
 
 in
@@ -30,4 +32,6 @@ rec {
   };
 
   feeluown = python3.pkgs.toPythonApplication python3.pkgs.fuo;
+
+  i3-quickterm = python3.pkgs.toPythonApplication python3.pkgs.i3-quickterm;
 }
