@@ -2,7 +2,7 @@ final: prev:
 {
   smartdns = prev.callPackage ../pkgs/smartdns { };
 
-  blesh = prev.callPackage ../pkgs/blesh { };
+  # blesh = prev.callPackage ../pkgs/blesh { };
 
   cnip = prev.callPackage ../pkgs/cnip { };
 
