@@ -1,10 +1,5 @@
 final: prev:
 {
-  smartdns = prev.callPackage ../pkgs/smartdns { };
-
-  # blesh = prev.callPackage ../pkgs/blesh { };
-
-  cnip = prev.callPackage ../pkgs/cnip { };
 
   flake-updater = prev.callPackage ../pkgs/flake-updater { };
 
@@ -13,12 +8,6 @@ final: prev:
     cap2ctl = prev.callPackage ../pkgs/cap2ctl { };
   };
 
-  gfw-white-list = prev.callPackage ../pkgs/gfw-white-list { };
-
   sdcv-dict = prev.callPackage ../pkgs/sdcv-dict { };
-
-  udp2raw = prev.callPackage ../pkgs/udp2raw { };
-
-  gamescope = prev.callPackage ../pkgs/gamescope { };
 
 }
